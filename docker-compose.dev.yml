@@ -1,0 +1,41 @@
+# docker-compose.dev.yml
+# 開発環境用の完全な設定ファイル
+# 起動コマンド: docker-compose -f docker-compose.dev.yml up --build
+
+services:
+  # バックエンドサービス (FastAPI)
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app # ホストのソースコードをコンテナに同期
+    env_file:
+      - ./.env # データベース接続情報などを読み込む
+    depends_on:
+      - db   # dbサービスが起動してから開始する
+
+  # フロントエンドサービス (Next.js)
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app    # ホストのソースコードをコンテナに同期
+      - /app/node_modules # node_modulesはコンテナ内のものを使用
+    depends_on:
+      - backend
+
+  # 開発用データベースサービス (MySQL)
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306" # ホストPCからDBに直接接続する場合のポート
+    env_file:
+      - ./.env # MySQLのパスワード等を読み込む
+    volumes:
+      - db-data:/var/lib/mysql # データを永続化する
+
+# データベースのデータを永続化するためのVolumeを定義
+volumes:
+  db-data:
