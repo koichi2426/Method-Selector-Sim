@@ -1,91 +1,113 @@
 import Link from 'next/link';
 import React from 'react';
-// Heroiconsから必要なアイコンをインポートします
+// Heroiconsから必要なアイコンをインポート
 import {
-  PencilSquareIcon,
-  InboxArrowDownIcon,
-  CircleStackIcon,
-  ArrowsRightLeftIcon,
-  ShieldCheckIcon,
-  DocumentTextIcon,
-  Cog6ToothIcon,
-  ArrowLongRightIcon, // 矢印アイコンもHeroiconsに変更
-} from '@heroicons/react/24/outline'; // 線画スタイルのアイコンをインポート
+  PencilSquareIcon, InboxArrowDownIcon, CircleStackIcon,
+  ArrowsRightLeftIcon, ShieldCheckIcon, DocumentTextIcon,
+  Cog6ToothIcon, ArrowLongRightIcon, CpuChipIcon
+} from '@heroicons/react/24/outline';
 
-// モジュールカードの型定義を更新
-type ModuleCardProps = {
-  href: string;
-  title: string;
-  icon: React.ReactNode; // アイコンをReactコンポーネントとして受け取る
-  className?: string;
-};
+// --- Header Component ---
+const Header = () => (
+  <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+    <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+      <Link href="/" className="flex items-center gap-2">
+        <CpuChipIcon className="h-7 w-7 text-blue-500" />
+        <span className="text-xl font-bold text-gray-800 dark:text-white">Inference Engine</span>
+      </Link>
+      <nav>
+        <a 
+          href="https://github.com/koichi2426/Method-Selector-Sim"
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+        >
+          GitHub
+        </a>
+      </nav>
+    </div>
+  </header>
+);
 
-// モジュールカードコンポーネント
-const ModuleCard: React.FC<ModuleCardProps> = ({ href, title, icon, className }) => (
+// --- ModuleCard Component ---
+type ModuleCardProps = { href: string; title: string; icon: React.ReactNode; };
+const ModuleCard: React.FC<ModuleCardProps> = ({ href, title, icon }) => (
   <Link href={href}>
-    <div className={`
-      flex flex-col items-center justify-center text-center group
-      p-4 w-40 h-32 bg-white dark:bg-gray-800 
-      border border-gray-200 dark:border-gray-700 rounded-lg 
-      shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer
-      ${className}
-    `}>
-      {/* アイコンの色やサイズを調整 */}
-      <div className="w-10 h-10 text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition-colors">
+    <div className="
+      group flex h-36 w-44 flex-col items-center justify-center gap-3 rounded-xl 
+      border border-gray-200/80 dark:border-gray-700/80 
+      bg-white/70 dark:bg-gray-800/70 
+      p-4 text-center shadow-lg shadow-gray-200/50 dark:shadow-black/20
+      transition-all duration-300 hover:!bg-white hover:dark:!bg-gray-800 hover:shadow-xl hover:-translate-y-1.5
+    ">
+      <div className="h-10 w-10 text-gray-500 transition-colors group-hover:text-blue-500 dark:text-gray-400">
         {icon}
       </div>
-      <span className="mt-3 font-semibold text-sm text-gray-700 dark:text-gray-200">{title}</span>
+      <span className="font-semibold text-sm text-gray-800 dark:text-gray-100">{title}</span>
     </div>
   </Link>
 );
 
-// フローを示す矢印コンポーネント
+// --- FlowArrow Component ---
 const FlowArrow: React.FC = () => (
-  <div className="text-gray-300 dark:text-gray-600 mx-2 hidden md:block">
-    <ArrowLongRightIcon className="w-10 h-10" />
+  <div className="hidden text-gray-300 dark:text-gray-600 md:block">
+    <ArrowLongRightIcon className="h-10 w-10" />
   </div>
 );
 
-// メインのホームページ
+// --- Footer Component ---
+const Footer = () => (
+  <footer className="w-full border-t border-gray-200/50 dark:border-gray-700/50 py-6">
+    <div className="container mx-auto max-w-7xl px-4 text-center text-sm text-gray-500">
+      <p>&copy; {new Date().getFullYear()} Lightweight Inference Engine Project. All Rights Reserved.</p>
+    </div>
+  </footer>
+);
+
+// --- Main Page Component ---
 export default function Home() {
+  // 指定された順番でパイプラインのデータを定義
+  const pipelineModules = [
+    { href: "/modules/log-generator", title: "状態・行動ログ生成", icon: <PencilSquareIcon /> },
+    { href: "/modules/collector", title: "収集モジュール", icon: <InboxArrowDownIcon /> },
+    { href: "/database/logs", title: "状態・行動ログ保管", icon: <CircleStackIcon /> },
+    { href: "/modules/triplet-converter", title: "Triplet変換", icon: <ArrowsRightLeftIcon /> },
+    { href: "/database/triplets", title: "Triplet保管", icon: <CircleStackIcon /> },
+    { href: "/modules/finetuner", title: "ファインチューナー", icon: <Cog6ToothIcon /> },
+    { href: "/database/models", title: "モデル保管", icon: <CircleStackIcon /> },
+    { href: "/modules/validator", title: "モデル検証", icon: <ShieldCheckIcon /> },
+  ];
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
-          推論エンジン パイプライン
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 mt-2">
-          各モジュールをクリックして操作してください。
-        </p>
-      </div>
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+      <Header />
+      <main className="flex-1">
+        <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-24">
+          {/* --- ページタイトル --- */}
+          <div className="mb-16 text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              推論エンジン パイプライン
+            </h1>
+            <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
+              各モジュールをクリックして、パイプラインの各ステップを操作・確認できます。
+            </p>
+          </div>
 
-      <div className="flex flex-col items-center gap-8">
-        {/* 上段のフロー */}
-        <div className="flex items-center justify-center flex-wrap gap-4 md:gap-0">
-          <ModuleCard href="/modules/log-generator" title="状態・行動ログ生成" icon={<PencilSquareIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/modules/collector" title="収集モジュール" icon={<InboxArrowDownIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/database/logs" title="ログ保管" icon={<CircleStackIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/modules/triplet-converter" title="Triplet変換" icon={<ArrowsRightLeftIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/database/triplets" title="Triplet保管" icon={<CircleStackIcon />} />
+          {/* --- パイプラインのコンテナ --- */}
+          <div className="rounded-2xl bg-gray-200/30 dark:bg-gray-800/30 p-8 md:p-12 border border-gray-200/50 dark:border-gray-700/50">
+            {/* 1直線に並べ、画面幅に応じて折り返す */}
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-6">
+              {pipelineModules.map((module, i) => (
+                <React.Fragment key={module.href}>
+                  <ModuleCard {...module} />
+                  {i < pipelineModules.length - 1 && <FlowArrow />}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
         </div>
-
-        {/* 下段のフロー (逆順) */}
-        <div className="flex items-center justify-center flex-wrap-reverse gap-4 md:gap-0">
-          <ModuleCard href="/modules/validator" title="モデル検証" icon={<ShieldCheckIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/database/models" title="モデル保管" icon={<CircleStackIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/models/trained" title="トレーニング済モデル" icon={<DocumentTextIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/modules/finetuner" title="ファインチューナー" icon={<Cog6ToothIcon />} />
-          <FlowArrow />
-          <ModuleCard href="/models/decoder" title="デコーダモデル" icon={<DocumentTextIcon />} />
-        </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
