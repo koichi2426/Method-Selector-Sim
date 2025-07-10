@@ -6,7 +6,7 @@ export const Header = () => (
     <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
       <Link href="/" className="flex items-center gap-2">
         <CpuChipIcon className="h-7 w-7 text-blue-500" />
-        <span className="text-xl font-bold text-gray-800 dark:text-white">Inference Engine</span>
+        <span className="text-xl font-bold text-gray-800 dark:text-white">Method-Selector-Sim</span>
       </Link>
       <nav>
         <a
