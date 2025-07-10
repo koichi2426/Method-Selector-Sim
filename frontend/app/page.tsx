@@ -66,10 +66,10 @@ export default function Home() {
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-24">
           <div className="mb-16 text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              推論エンジン パイプライン
+              Engine Build Pipeline
             </h1>
             <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
-              各モジュールをクリックして、パイプラインの各ステップを操作・確認できます。
+              Click each module to operate and check each step of the build pipeline.
             </p>
           </div>
           
