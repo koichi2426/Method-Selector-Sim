@@ -42,6 +42,10 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```bash
     docker-compose up --build -d
     ```
+    開発用なら以下
+    ```bash
+    docker-compose -f docker-compose.dev.yml up --build
+    ```
 
       * `--build`: イメージを再ビルドします（初回起動時やDockerfile変更時に必要）。
       * `-d`: バックグラウンドでコンテナを起動します（デタッチモード）。
