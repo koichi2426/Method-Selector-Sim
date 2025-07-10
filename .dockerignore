@@ -1,0 +1,8 @@
+# 生成されたファイルやフォルダ
+node_modules
+.next
+npm-debug.log
+
+# その他
+.git
+.env
