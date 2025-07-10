@@ -46,17 +46,17 @@ const LeftArrow: React.FC = () => (
 // --- Main Page Component ---
 export default function Home() {
   const row1Modules = [
-    { href: "/modules/log-generator", title: "状態・行動ログ生成", icon: <PencilSquareIcon /> },
-    { href: "/modules/collector", title: "収集モジュール", icon: <InboxArrowDownIcon /> },
-    { href: "/database/logs", title: "状態・行動ログ保管", icon: <CircleStackIcon /> },
-    { href: "/modules/triplet-converter", title: "Triplet変換", icon: <ArrowsRightLeftIcon /> },
+    { href: "/modules/scenario-generator", title: "Scenario Generator", icon: <PencilSquareIcon /> },
+    { href: "/modules/preprocessor", title: "Preprocessor", icon: <Cog6ToothIcon /> },
+    { href: "/database/processed-data-store", title: "Processed Data Store", icon: <CircleStackIcon /> },
+    { href: "/modules/triplet-former", title: "Triplet Former", icon: <ArrowsRightLeftIcon /> },
   ];
 
   const row2Modules = [
-    { href: "/modules/validator", title: "モデル検証", icon: <ShieldCheckIcon /> },
-    { href: "/database/models", title: "モデル保管", icon: <CircleStackIcon /> },
-    { href: "/modules/finetuner", title: "ファインチューナー", icon: <Cog6ToothIcon /> },
-    { href: "/database/triplets", title: "Triplet保管", icon: <CircleStackIcon /> },
+    { href: "/modules/validator", title: "Performance Evaluator", icon: <ShieldCheckIcon /> },
+    { href: "/database/model-registry", title: "Model Registry", icon: <CircleStackIcon /> },
+    { href: "/modules/model-trainer", title: "Model Trainer", icon: <Cog6ToothIcon /> },
+    { href: "/database/triplet-data-store", title: "Triplet Data Store", icon: <CircleStackIcon /> },
   ];
 
   return (
