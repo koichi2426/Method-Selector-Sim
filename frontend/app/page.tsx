@@ -1,35 +1,16 @@
 import Link from 'next/link';
 import React from 'react';
-// Heroiconsから必要なアイコンをインポート
+import { Header } from '@/app/components/Header'; // 共通Headerをインポート
+import { Footer } from '@/app/components/Footer'; // 共通Footerをインポート
 import {
   PencilSquareIcon, InboxArrowDownIcon, CircleStackIcon,
-  ArrowsRightLeftIcon, ShieldCheckIcon, DocumentTextIcon,
-  Cog6ToothIcon, ArrowLongRightIcon, CpuChipIcon
+  ArrowsRightLeftIcon, ShieldCheckIcon, Cog6ToothIcon, 
+  ArrowLongRightIcon
 } from '@heroicons/react/24/outline';
 
-// --- Header Component ---
-const Header = () => (
-  <header className="sticky top-0 z-50 w-full border-b border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-    <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-      <Link href="/" className="flex items-center gap-2">
-        <CpuChipIcon className="h-7 w-7 text-blue-500" />
-        <span className="text-xl font-bold text-gray-800 dark:text-white">Inference Engine</span>
-      </Link>
-      <nav>
-        <a 
-          href="https://github.com/koichi2426/Method-Selector-Sim"
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-gray-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
-        >
-          GitHub
-        </a>
-      </nav>
-    </div>
-  </header>
-);
+// --- このページだけで使うコンポーネント ---
 
-// --- ModuleCard Component ---
+// ModuleCard Component
 type ModuleCardProps = { href: string; title: string; icon: React.ReactNode; };
 const ModuleCard: React.FC<ModuleCardProps> = ({ href, title, icon }) => (
   <Link href={href}>
@@ -48,25 +29,17 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ href, title, icon }) => (
   </Link>
 );
 
-// --- FlowArrow Component ---
+// FlowArrow Component
 const FlowArrow: React.FC = () => (
   <div className="hidden text-gray-300 dark:text-gray-600 md:block">
     <ArrowLongRightIcon className="h-10 w-10" />
   </div>
 );
 
-// --- Footer Component ---
-const Footer = () => (
-  <footer className="w-full border-t border-gray-200/50 dark:border-gray-700/50 py-6">
-    <div className="container mx-auto max-w-7xl px-4 text-center text-sm text-gray-500">
-      <p>&copy; {new Date().getFullYear()} Lightweight Inference Engine Project. All Rights Reserved.</p>
-    </div>
-  </footer>
-);
 
 // --- Main Page Component ---
 export default function Home() {
-  // 指定された順番でパイプラインのデータを定義
+  // パイプラインのデータを定義
   const pipelineModules = [
     { href: "/modules/log-generator", title: "状態・行動ログ生成", icon: <PencilSquareIcon /> },
     { href: "/modules/collector", title: "収集モジュール", icon: <InboxArrowDownIcon /> },
@@ -83,7 +56,6 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-24">
-          {/* --- ページタイトル --- */}
           <div className="mb-16 text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
               推論エンジン パイプライン
@@ -92,10 +64,7 @@ export default function Home() {
               各モジュールをクリックして、パイプラインの各ステップを操作・確認できます。
             </p>
           </div>
-
-          {/* --- パイプラインのコンテナ --- */}
           <div className="rounded-2xl bg-gray-200/30 dark:bg-gray-800/30 p-8 md:p-12 border border-gray-200/50 dark:border-gray-700/50">
-            {/* 1直線に並べ、画面幅に応じて折り返す */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-6">
               {pipelineModules.map((module, i) => (
                 <React.Fragment key={module.href}>
