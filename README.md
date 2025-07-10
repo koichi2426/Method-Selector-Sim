@@ -11,7 +11,8 @@
 
 アプリケーションを起動すると、以下のようなパイプラインのホーム画面が表示されます。
 
-![image](https://github.com/user-attachments/assets/789d732c-79d0-4f1c-bf65-5d80cf3db620)
+<img width="3420" height="1958" alt="image" src="https://github.com/user-attachments/assets/e8d34a30-af59-4d03-8e5a-e76b07bb0c2c" />
+
 
 
 ## 起動方法 (Getting Started)
