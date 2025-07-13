@@ -54,3 +54,7 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```bash
     docker-compose down
     ```
+
+
+## アーキテクチャ
+<img width="16384" height="14581" alt="image" src="https://github.com/user-attachments/assets/8af6c16a-d2e4-4de5-8fd7-434fd8bd8f61" />
