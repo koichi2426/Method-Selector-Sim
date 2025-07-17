@@ -1,4 +1,5 @@
 import abc
+import uuid  # uuidモジュールをインポート
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
@@ -7,9 +8,10 @@ from .evaluation_summary import EvaluationSummary
 
 @dataclass
 class ModelEvaluationSession:
-    ID: str
-    TrainedModel_ID: str
-    Dataset_ID: str
+    # ID関連の型をstrからuuid.UUIDへ変更
+    ID: uuid.UUID
+    TrainedModel_ID: uuid.UUID
+    Dataset_ID: uuid.UUID
     summary_metrics: EvaluationSummary
     created_at: datetime
 
@@ -19,7 +21,7 @@ class ModelEvaluationSessionRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, session_id: str) -> Optional[ModelEvaluationSession]:
+    def find_by_id(self, session_id: uuid.UUID) -> Optional[ModelEvaluationSession]: # 引数の型も変更
         pass
 
     @abc.abstractmethod
@@ -31,5 +33,5 @@ class ModelEvaluationSessionRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, session_id: str) -> None:
+    def delete(self, session_id: uuid.UUID) -> None: # 引数の型も変更
         pass

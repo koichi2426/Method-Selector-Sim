@@ -1,12 +1,14 @@
 import abc
+import uuid  # uuidモジュールをインポート
 from dataclasses import dataclass
 from typing import List, Optional
 
 @dataclass
 class IndividualEvaluationResult:
-    ID: str
-    ModelEvaluationSession_ID: str
-    test_data_id: str
+    # ID関連の型をstrからuuid.UUIDへ変更
+    ID: uuid.UUID
+    ModelEvaluationSession_ID: uuid.UUID
+    test_data_id: uuid.UUID
     inference_time_ms: float
     power_consumption_mw: float
     llm_judge_score: float
@@ -18,11 +20,11 @@ class IndividualEvaluationResultRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, result_id: str) -> Optional[IndividualEvaluationResult]:
+    def find_by_id(self, result_id: uuid.UUID) -> Optional[IndividualEvaluationResult]: # 引数の型も変更
         pass
 
     @abc.abstractmethod
-    def find_by_session_id(self, session_id: str) -> List[IndividualEvaluationResult]:
+    def find_by_session_id(self, session_id: uuid.UUID) -> List[IndividualEvaluationResult]: # 引数の型も変更
         pass
 
     @abc.abstractmethod
@@ -30,5 +32,5 @@ class IndividualEvaluationResultRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, result_id: str) -> None:
+    def delete(self, result_id: uuid.UUID) -> None: # 引数の型も変更
         pass

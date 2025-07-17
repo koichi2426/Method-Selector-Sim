@@ -1,11 +1,13 @@
 import abc
+import uuid  # uuidモジュールをインポート
 from dataclasses import dataclass
 from typing import List, Optional
 
 @dataclass
 class TrainingReadyScenario:
-    ID: str
-    Scenario_ID: str
+    # IDとScenario_IDの型をstrからuuid.UUIDへ変更
+    ID: uuid.UUID
+    Scenario_ID: uuid.UUID
     state: str
     method_group: str
     negative_method_group: str
@@ -16,7 +18,7 @@ class TrainingReadyScenarioRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, scenario_id: str) -> Optional[TrainingReadyScenario]:
+    def find_by_id(self, scenario_id: uuid.UUID) -> Optional[TrainingReadyScenario]: # 引数の型も変更
         pass
 
     @abc.abstractmethod
@@ -28,5 +30,5 @@ class TrainingReadyScenarioRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, scenario_id: str) -> None:
+    def delete(self, scenario_id: uuid.UUID) -> None: # 引数の型も変更
         pass
