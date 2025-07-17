@@ -1,18 +1,14 @@
 import abc
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
 from typing import List, Protocol
 
 from backend.domain import (
     Scenario,
-    NewScenario,
     ScenarioRepository,
-    NewUUID,
     MethodProfile,
     Situation,
     ScenarioGeneratorDomainService,
-    LogGenerationConfig,
     NewLogGenerationConfig,
 )
 
@@ -58,9 +54,7 @@ class GenerateScenariosInteractor:
         self.domain_service = domain_service
         self.timeout_sec = timeout_sec
 
-    def execute(
-        self, input_data: GenerateScenariosInput
-    ) -> tuple[List[GenerateScenariosOutput], Exception | None]:
+    def execute(self, input_data: GenerateScenariosInput) -> tuple[List[GenerateScenariosOutput], Exception | None]:
         try:
             config = NewLogGenerationConfig(
                 output_count=input_data.output_count,
