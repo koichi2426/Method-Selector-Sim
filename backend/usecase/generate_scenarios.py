@@ -3,7 +3,7 @@ import uuid
 from dataclasses import dataclass
 from typing import List, Protocol
 
-from backend.domain import (
+from domain import (
     Scenario,
     ScenarioRepository,
     MethodProfile,
