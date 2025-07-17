@@ -1,12 +1,11 @@
 import abc
-import uuid  # uuidモジュールをインポート
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
 @dataclass
 class TrainedModel:
-    # ID関連の型をstrからuuid.UUIDへ変更
     ID: uuid.UUID
     name: str
     Dataset_ID: uuid.UUID
@@ -20,7 +19,7 @@ class TrainedModelRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, model_id: uuid.UUID) -> Optional[TrainedModel]: # 引数の型も変更
+    def find_by_id(self, model_id: uuid.UUID) -> Optional[TrainedModel]:
         pass
 
     @abc.abstractmethod
@@ -32,5 +31,25 @@ class TrainedModelRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, model_id: uuid.UUID) -> None: # 引数の型も変更
+    def delete(self, model_id: uuid.UUID) -> None:
         pass
+
+def NewTrainedModel(
+    ID: uuid.UUID,
+    name: str,
+    Dataset_ID: uuid.UUID,
+    description: str,
+    file_path: str,
+    created_at: datetime,
+) -> TrainedModel:
+    """
+    TrainedModelインスタンスを生成するファクトリ関数。
+    """
+    return TrainedModel(
+        ID=ID,
+        name=name,
+        Dataset_ID=Dataset_ID,
+        description=description,
+        file_path=file_path,
+        created_at=created_at,
+    )

@@ -1,11 +1,10 @@
 import abc
-import uuid  # uuidモジュールをインポート
+import uuid
 from dataclasses import dataclass
 from typing import List, Optional
 
 @dataclass
 class Triplet:
-    # IDとTrainingReadyScenario_IDの型をstrからuuid.UUIDへ変更
     ID: uuid.UUID
     TrainingReadyScenario_ID: uuid.UUID
     anchor: str
@@ -18,7 +17,7 @@ class TripletRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, triplet_id: uuid.UUID) -> Optional[Triplet]: # 引数の型も変更
+    def find_by_id(self, triplet_id: uuid.UUID) -> Optional[Triplet]:
         pass
 
     @abc.abstractmethod
@@ -30,5 +29,23 @@ class TripletRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, triplet_id: uuid.UUID) -> None: # 引数の型も変更
+    def delete(self, triplet_id: uuid.UUID) -> None:
         pass
+
+def NewTriplet(
+    ID: uuid.UUID,
+    TrainingReadyScenario_ID: uuid.UUID,
+    anchor: str,
+    positive: str,
+    negative: str,
+) -> Triplet:
+    """
+    Tripletインスタンスを生成するファクトリ関数。
+    """
+    return Triplet(
+        ID=ID,
+        TrainingReadyScenario_ID=TrainingReadyScenario_ID,
+        anchor=anchor,
+        positive=positive,
+        negative=negative,
+    )
