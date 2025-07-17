@@ -1,16 +1,39 @@
 import abc
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
 @dataclass
 class Dataset:
-    ID: str
+    ID: uuid.UUID
     name: str
     description: str
     type: str
-    Triplet_ids: List[str]
+    triplet_ids: List[uuid.UUID]
     created_at: datetime
+
+def NewDataset(
+    ID: uuid.UUID,
+    name: str,
+    description: str,
+    type: str,
+    triplet_ids: List[uuid.UUID],
+    created_at: datetime
+) -> Dataset:
+    if not name:
+        raise ValueError("Dataset name cannot be empty")
+    if not type:
+        raise ValueError("Dataset type cannot be empty")
+
+    return Dataset(
+        ID=ID,
+        name=name,
+        description=description,
+        type=type,
+        triplet_ids=triplet_ids,
+        created_at=created_at
+    )
 
 class DatasetRepository(abc.ABC):
     @abc.abstractmethod
@@ -18,7 +41,7 @@ class DatasetRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, dataset_id: str) -> Optional[Dataset]:
+    def find_by_id(self, dataset_id: uuid.UUID) -> Optional[Dataset]:
         pass
 
     @abc.abstractmethod
@@ -30,5 +53,5 @@ class DatasetRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, dataset_id: str) -> None:
+    def delete(self, dataset_id: uuid.UUID) -> None:
         pass
