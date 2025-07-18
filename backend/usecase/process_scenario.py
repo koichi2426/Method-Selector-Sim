@@ -1,7 +1,7 @@
 import abc
 import uuid
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, List
 
 from domain import (
     Scenario,
@@ -15,13 +15,13 @@ from domain import (
 class ProcessScenarioUseCase(Protocol):
     def execute(
         self, input_data: "ProcessScenarioInput"
-    ) -> tuple["ProcessScenarioOutput", Exception | None]:
+    ) -> tuple[List["ProcessScenarioOutput"], Exception | None]:
         ...
 
 
 @dataclass
 class ProcessScenarioInput:
-    scenario_id: uuid.UUID
+    scenario_ids: List[uuid.UUID]
 
 
 @dataclass
@@ -56,31 +56,25 @@ class ProcessScenarioInteractor:
         self.domain_service = domain_service
         self.timeout_sec = timeout_sec
 
-    def execute(
-        self, input_data: ProcessScenarioInput
-    ) -> tuple[ProcessScenarioOutput, Exception | None]:
+    def execute(self, input_data: ProcessScenarioInput) -> tuple[List[ProcessScenarioOutput], Exception | None]:
         try:
-            scenario = self.scenario_repo.find_by_id(input_data.scenario_id)
-            if not scenario:
-                raise ValueError(f"Scenario with ID {input_data.scenario_id} not found.")
+            outputs = []
+            for scenario_id in input_data.scenario_ids:
+                scenario = self.scenario_repo.find_by_id(scenario_id)
+                if not scenario:
+                    continue
 
-            training_ready_scenario = self.domain_service.process_scenario(scenario)
+                training_ready_scenario = self.domain_service.process_scenario(scenario)
 
-            created_trs = self.trs_repo.create(training_ready_scenario)
+                created_trs = self.trs_repo.create(training_ready_scenario)
 
-            output = self.presenter.output(created_trs)
+                output = self.presenter.output(created_trs)
+                outputs.append(output)
 
-            return output, None
+            return outputs, None
 
         except Exception as e:
-            empty_output = ProcessScenarioOutput(
-                ID=uuid.UUID(int=0),
-                Scenario_ID=uuid.UUID(int=0),
-                state="",
-                method_group="",
-                negative_method_group="",
-            )
-            return empty_output, e
+            return [], e
 
 
 def new_process_scenario_interactor(
