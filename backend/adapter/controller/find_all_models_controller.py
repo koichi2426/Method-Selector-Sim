@@ -5,7 +5,7 @@ from usecase.find_all_models import (
 )
 
 
-class FindAllModelsAction:
+class FindAllModelsController:
     def __init__(self, uc: FindAllModelsUseCase):
         self.uc = uc
 

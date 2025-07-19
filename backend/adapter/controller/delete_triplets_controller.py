@@ -6,7 +6,7 @@ from usecase.delete_triplets import (
 )
 
 
-class DeleteTripletsAction:
+class DeleteTripletsController:
     def __init__(self, uc: DeleteTripletsUseCase):
         self.uc = uc
 

@@ -6,7 +6,7 @@ from usecase.form_triplets_from import (
 )
 
 
-class FormTripletsFromAction:
+class FormTripletsFromController:
     def __init__(self, uc: FormTripletsFromUseCase):
         self.uc = uc
 

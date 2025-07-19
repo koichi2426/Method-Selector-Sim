@@ -5,7 +5,7 @@ from usecase.find_all_scenario import (
 )
 
 
-class FindAllScenarioAction:
+class FindAllScenarioController:
     def __init__(self, uc: FindAllScenarioUseCase):
         self.uc = uc
 

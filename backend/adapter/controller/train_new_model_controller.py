@@ -6,7 +6,7 @@ from usecase.train_new_model import (
 )
 
 
-class TrainNewModelAction:
+class TrainNewModelController:
     def __init__(self, uc: TrainNewModelUseCase):
         self.uc = uc
 

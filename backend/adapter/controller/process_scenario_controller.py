@@ -6,7 +6,7 @@ from usecase.process_scenario import (
 )
 
 
-class ProcessScenarioAction:
+class ProcessScenarioController:
     def __init__(self, uc: ProcessScenarioUseCase):
         self.uc = uc
 

@@ -5,7 +5,7 @@ from usecase.find_all_processed_scenarios import (
 )
 
 
-class FindAllProcessedScenariosAction:
+class FindAllProcessedScenariosController:
     def __init__(self, uc: FindAllProcessedScenariosUseCase):
         self.uc = uc
 

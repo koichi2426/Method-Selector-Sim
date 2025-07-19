@@ -5,7 +5,7 @@ from usecase.find_all_triplets import (
 )
 
 
-class FindAllTripletsAction:
+class FindAllTripletsController:
     def __init__(self, uc: FindAllTripletsUseCase):
         self.uc = uc
 

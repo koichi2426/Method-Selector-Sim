@@ -6,7 +6,7 @@ from usecase.generate_scenarios import (
 )
 
 
-class GenerateScenariosAction:
+class GenerateScenariosController:
     def __init__(self, uc: GenerateScenariosUseCase):
         self.uc = uc
 

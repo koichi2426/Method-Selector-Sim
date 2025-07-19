@@ -6,7 +6,7 @@ from usecase.delete_dataset import (
 )
 
 
-class DeleteDatasetAction:
+class DeleteDatasetController:
     def __init__(self, uc: DeleteDatasetUseCase):
         self.uc = uc
 

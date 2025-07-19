@@ -6,7 +6,7 @@ from usecase.compose_new_dataset import (
 )
 
 
-class ComposeNewDatasetAction:
+class ComposeNewDatasetController:
     def __init__(self, uc: ComposeNewDatasetUseCase):
         self.uc = uc
 

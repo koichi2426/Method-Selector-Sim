@@ -6,7 +6,7 @@ from usecase.evaluate_model import (
 )
 
 
-class EvaluateModelAction:
+class EvaluateModelController:
     def __init__(self, uc: EvaluateModelUseCase):
         self.uc = uc
 

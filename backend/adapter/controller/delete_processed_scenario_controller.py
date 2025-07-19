@@ -6,7 +6,7 @@ from usecase.delete_processed_scenario import (
 )
 
 
-class DeleteProcessedScenarioAction:
+class DeleteProcessedScenarioController:
     def __init__(self, uc: DeleteProcessedScenarioUseCase):
         self.uc = uc
 

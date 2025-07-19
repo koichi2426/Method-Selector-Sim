@@ -6,7 +6,7 @@ from usecase.delete_model import (
 )
 
 
-class DeleteModelAction:
+class DeleteModelController:
     def __init__(self, uc: DeleteModelUseCase):
         self.uc = uc
 
