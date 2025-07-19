@@ -1,12 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
-
-
-from domain import (
-    DatasetRepository,
-)
+from backend.domain import DatasetRepository, UUID
 
 
 class DeleteDatasetUseCase(Protocol):
@@ -18,18 +13,18 @@ class DeleteDatasetUseCase(Protocol):
 
 @dataclass
 class DeleteDatasetInput:
-    dataset_id: uuid.UUID
+    dataset_id: UUID
 
 
 @dataclass
 class DeleteDatasetOutput:
-    ID: uuid.UUID
+    ID: UUID
     message: str
 
 
 class DeleteDatasetPresenter(abc.ABC):
     @abc.abstractmethod
-    def output(self, deleted_id: uuid.UUID) -> "DeleteDatasetOutput":
+    def output(self, deleted_id: UUID) -> "DeleteDatasetOutput":
         pass
 
 

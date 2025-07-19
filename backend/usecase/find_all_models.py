@@ -1,13 +1,8 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol, List
 from datetime import datetime
-
-from domain import (
-    TrainedModel,
-    TrainedModelRepository,
-)
+from backend.domain import TrainedModel, TrainedModelRepository, UUID
 
 
 class FindAllModelsUseCase(Protocol):
@@ -17,9 +12,9 @@ class FindAllModelsUseCase(Protocol):
 
 @dataclass
 class FindAllModelsOutput:
-    ID: uuid.UUID
+    ID: UUID
     name: str
-    Dataset_ID: uuid.UUID
+    Dataset_ID: UUID
     description: str
     file_path: str
     created_at: str

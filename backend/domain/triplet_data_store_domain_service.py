@@ -1,8 +1,7 @@
 import abc
-import uuid  # uuidモジュールをインポート
 from typing import List
-
 from .triplet import Triplet
+from .custom_uuid import UUID
 
 class TripletDataStoreDomainService(abc.ABC):
     @abc.abstractmethod
@@ -10,5 +9,5 @@ class TripletDataStoreDomainService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_triplet(self, id: uuid.UUID) -> None: # 引数の型も変更
+    def delete_triplet(self, id: UUID) -> None:
         pass

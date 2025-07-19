@@ -1,16 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import List, Protocol
-
-from domain import (
-    Scenario,
-    ScenarioRepository,
-    MethodProfile,
-    Situation,
-    ScenarioGeneratorDomainService,
-    LogGenerationConfig,
-)
+from backend.domain import Scenario, ScenarioRepository, MethodProfile, Situation, ScenarioGeneratorDomainService, LogGenerationConfig, UUID
 
 class GenerateScenariosUseCase(Protocol):
     def execute(
@@ -28,7 +19,7 @@ class GenerateScenariosInput:
 
 @dataclass
 class GenerateScenariosOutput:
-    ID: uuid.UUID
+    ID: UUID
     state: str
     method_group: str
     target_method: str

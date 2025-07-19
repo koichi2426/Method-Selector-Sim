@@ -1,8 +1,7 @@
 import abc
-import uuid  # uuidモジュールをインポート
 from typing import List
-
 from .training_ready_scenario import TrainingReadyScenario
+from .custom_uuid import UUID
 
 class ProcessedDataStoreDomainService(abc.ABC):
     @abc.abstractmethod
@@ -10,5 +9,5 @@ class ProcessedDataStoreDomainService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_processed_scenario(self, id: uuid.UUID) -> None: # 引数の型も変更
+    def delete_processed_scenario(self, id: UUID) -> None:
         pass

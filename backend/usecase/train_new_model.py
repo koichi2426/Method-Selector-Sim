@@ -1,18 +1,8 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
 from datetime import datetime
-
-from domain import (
-    Dataset,
-    DatasetRepository,
-    TrainingParameters,
-    NewTrainingParameters,
-    TrainedModel,
-    TrainedModelRepository,
-    ModelTrainerDomainService,
-)
+from backend.domain import Dataset, DatasetRepository, TrainingParameters, NewTrainingParameters, TrainedModel, TrainedModelRepository, ModelTrainerDomainService, UUID
 
 
 class TrainNewModelUseCase(Protocol):
@@ -24,7 +14,7 @@ class TrainNewModelUseCase(Protocol):
 
 @dataclass
 class TrainNewModelInput:
-    dataset_id: uuid.UUID
+    dataset_id: UUID
     epochs: int
     batch_size: int
     learning_rate: float
@@ -32,9 +22,9 @@ class TrainNewModelInput:
 
 @dataclass
 class TrainNewModelOutput:
-    ID: uuid.UUID
+    ID: UUID
     name: str
-    Dataset_ID: uuid.UUID
+    Dataset_ID: UUID
     description: str
     file_path: str
     created_at: str
@@ -84,10 +74,12 @@ class TrainNewModelInteractor:
             return output, None
 
         except Exception as e:
+            from datetime import datetime
+            from backend.domain import UUID
             empty_output = TrainNewModelOutput(
-                ID=uuid.UUID(int=0),
+                ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 name="",
-                Dataset_ID=uuid.UUID(int=0),
+                Dataset_ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 description="",
                 file_path="",
                 created_at=datetime.min.isoformat(),

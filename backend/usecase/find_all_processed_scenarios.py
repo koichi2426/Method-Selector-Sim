@@ -1,13 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol, List
-
-
-from domain import (
-    TrainingReadyScenario,
-    TrainingReadyScenarioRepository,
-)
+from backend.domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
 
 
 class FindAllProcessedScenariosUseCase(Protocol):
@@ -17,8 +11,8 @@ class FindAllProcessedScenariosUseCase(Protocol):
 
 @dataclass
 class FindAllProcessedScenariosOutput:
-    ID: uuid.UUID
-    Scenario_ID: uuid.UUID
+    ID: UUID
+    Scenario_ID: UUID
     state: str
     method_group: str
     negative_method_group: str

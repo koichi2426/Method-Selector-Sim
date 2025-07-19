@@ -3,7 +3,7 @@ import unittest
 import uuid as std_uuid  # 標準のuuidモジュールを別名でインポート
 
 # 変更後のファイル名 'custom_uuid' からインポートします
-from custom_uuid import NewUUID, UUID
+from backend.domain.custom_uuid import NewUUID, UUID
 
 class TestCustomUUID(unittest.TestCase):
 
