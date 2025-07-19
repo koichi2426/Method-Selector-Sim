@@ -9,7 +9,7 @@ from domain import (
     MethodProfile,
     Situation,
     ScenarioGeneratorDomainService,
-    NewLogGenerationConfig,
+    LogGenerationConfig,
 )
 
 class GenerateScenariosUseCase(Protocol):
@@ -56,7 +56,7 @@ class GenerateScenariosInteractor:
 
     def execute(self, input_data: GenerateScenariosInput) -> tuple[List[GenerateScenariosOutput], Exception | None]:
         try:
-            config = NewLogGenerationConfig(
+            config = LogGenerationConfig(
                 output_count=input_data.output_count,
                 method_pool=input_data.method_pool,
                 situations=input_data.situations,
