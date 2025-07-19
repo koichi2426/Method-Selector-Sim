@@ -1,12 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
-
-
-from domain import (
-    TrainingReadyScenarioRepository,
-)
+from backend.domain import TrainingReadyScenarioRepository, UUID
 
 
 class DeleteProcessedScenarioUseCase(Protocol):
@@ -18,18 +13,18 @@ class DeleteProcessedScenarioUseCase(Protocol):
 
 @dataclass
 class DeleteProcessedScenarioInput:
-    processed_scenario_id: uuid.UUID
+    processed_scenario_id: UUID
 
 
 @dataclass
 class DeleteProcessedScenarioOutput:
-    ID: uuid.UUID
+    ID: UUID
     message: str
 
 
 class DeleteProcessedScenarioPresenter(abc.ABC):
     @abc.abstractmethod
-    def output(self, deleted_id: uuid.UUID) -> "DeleteProcessedScenarioOutput":
+    def output(self, deleted_id: UUID) -> "DeleteProcessedScenarioOutput":
         pass
 
 

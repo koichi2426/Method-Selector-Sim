@@ -1,14 +1,14 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
+from .custom_uuid import UUID
 
 @dataclass
 class TrainedModel:
-    ID: uuid.UUID
+    ID: UUID
     name: str
-    Dataset_ID: uuid.UUID
+    Dataset_ID: UUID
     description: str
     file_path: str
     created_at: datetime
@@ -19,7 +19,7 @@ class TrainedModelRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, model_id: uuid.UUID) -> Optional[TrainedModel]:
+    def find_by_id(self, model_id: UUID) -> Optional[TrainedModel]:
         pass
 
     @abc.abstractmethod
@@ -31,13 +31,13 @@ class TrainedModelRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, model_id: uuid.UUID) -> None:
+    def delete(self, model_id: UUID) -> None:
         pass
 
 def NewTrainedModel(
-    ID: uuid.UUID,
+    ID: UUID,
     name: str,
-    Dataset_ID: uuid.UUID,
+    Dataset_ID: UUID,
     description: str,
     file_path: str,
     created_at: datetime,

@@ -1,15 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
-
-from domain import (
-    TrainingReadyScenario,
-    TrainingReadyScenarioRepository,
-    Triplet,
-    TripletRepository,
-    TripletFormerDomainService,
-)
+from backend.domain import TrainingReadyScenario, TrainingReadyScenarioRepository, Triplet, TripletRepository, TripletFormerDomainService, UUID
 
 
 class FormTripletsFromUseCase(Protocol):
@@ -21,13 +13,13 @@ class FormTripletsFromUseCase(Protocol):
 
 @dataclass
 class FormTripletsFromInput:
-    training_ready_scenario_id: uuid.UUID
+    training_ready_scenario_id: UUID
 
 
 @dataclass
 class FormTripletsFromOutput:
-    ID: uuid.UUID
-    TrainingReadyScenario_ID: uuid.UUID
+    ID: UUID
+    TrainingReadyScenario_ID: UUID
     anchor: str
     positive: str
     negative: str
@@ -75,9 +67,10 @@ class FormTripletsFromInteractor:
             return output, None
 
         except Exception as e:
+            from backend.domain import UUID
             empty_output = FormTripletsFromOutput(
-                ID=uuid.UUID(int=0),
-                TrainingReadyScenario_ID=uuid.UUID(int=0),
+                ID=UUID(value="00000000-0000-0000-0000-000000000000"),
+                TrainingReadyScenario_ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 anchor="",
                 positive="",
                 negative="",

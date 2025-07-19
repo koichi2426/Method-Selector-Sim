@@ -1,12 +1,5 @@
-import uuid
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.individual_evaluation_result import (
-    IndividualEvaluationResult,
-    IndividualEvaluationResultRepository,
-)
+from backend.domain import IndividualEvaluationResult, IndividualEvaluationResultRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -30,9 +23,9 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
         try:
             self.db.execute(
                 query,
-                str(result.ID),
-                str(result.ModelEvaluationSession_ID),
-                str(result.test_data_id),
+                result.ID.value,
+                result.ModelEvaluationSession_ID.value,
+                result.test_data_id.value,
                 result.inference_time_ms,
                 result.power_consumption_mw,
                 result.llm_judge_score,
@@ -43,10 +36,10 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             # エラーロギングなどをここで行う
             raise RuntimeError(f"error creating individual evaluation result: {e}")
 
-    def find_by_id(self, result_id: uuid.UUID) -> Optional[IndividualEvaluationResult]:
+    def find_by_id(self, result_id: UUID) -> Optional[IndividualEvaluationResult]:
         query = "SELECT * FROM individual_evaluation_results WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(result_id))
+            row = self.db.query_row(query, result_id.value)
             return self._scan_row(row)
         except Exception as e:
             # "Not Found" のような特定のエラーはここで判定し、Noneを返す
@@ -54,12 +47,12 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             return None
 
     def find_by_session_id(
-        self, session_id: uuid.UUID
+        self, session_id: UUID
     ) -> List[IndividualEvaluationResult]:
         query = "SELECT * FROM individual_evaluation_results WHERE model_evaluation_session_id = ?"
         results = []
         try:
-            rows = self.db.query(query, str(session_id))
+            rows = self.db.query(query, session_id.value)
             while rows.next():
                 result = self._scan_rows(rows)
                 if result:
@@ -84,21 +77,21 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
         try:
             self.db.execute(
                 query,
-                str(result.ModelEvaluationSession_ID),
-                str(result.test_data_id),
+                result.ModelEvaluationSession_ID.value,
+                result.test_data_id.value,
                 result.inference_time_ms,
                 result.power_consumption_mw,
                 result.llm_judge_score,
                 result.llm_judge_reasoning,
-                str(result.ID),
+                result.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating individual evaluation result: {e}")
 
-    def delete(self, result_id: uuid.UUID) -> None:
+    def delete(self, result_id: UUID) -> None:
         query = "DELETE FROM individual_evaluation_results WHERE id = ?"
         try:
-            self.db.execute(query, str(result_id))
+            self.db.execute(query, result_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting individual evaluation result: {e}")
 
@@ -121,9 +114,9 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             )
 
             return IndividualEvaluationResult(
-                ID=uuid.UUID(id_str),
-                ModelEvaluationSession_ID=uuid.UUID(session_id_str),
-                test_data_id=uuid.UUID(test_data_id_str),
+                ID=UUID(value=id_str),
+                ModelEvaluationSession_ID=UUID(value=session_id_str),
+                test_data_id=UUID(value=test_data_id_str),
                 inference_time_ms=inference_time,
                 power_consumption_mw=power_consumption,
                 llm_judge_score=score,
@@ -151,9 +144,9 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             )
 
             return IndividualEvaluationResult(
-                ID=uuid.UUID(id_str),
-                ModelEvaluationSession_ID=uuid.UUID(session_id_str),
-                test_data_id=uuid.UUID(test_data_id_str),
+                ID=UUID(value=id_str),
+                ModelEvaluationSession_ID=UUID(value=session_id_str),
+                test_data_id=UUID(value=test_data_id_str),
                 inference_time_ms=inference_time,
                 power_consumption_mw=power_consumption,
                 llm_judge_score=score,

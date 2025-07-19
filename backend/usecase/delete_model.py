@@ -1,12 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
-
-
-from domain import (
-    TrainedModelRepository,
-)
+from backend.domain import TrainedModelRepository, UUID
 
 
 class DeleteModelUseCase(Protocol):
@@ -18,18 +13,18 @@ class DeleteModelUseCase(Protocol):
 
 @dataclass
 class DeleteModelInput:
-    model_id: uuid.UUID
+    model_id: UUID
 
 
 @dataclass
 class DeleteModelOutput:
-    ID: uuid.UUID
+    ID: UUID
     message: str
 
 
 class DeleteModelPresenter(abc.ABC):
     @abc.abstractmethod
-    def output(self, deleted_id: uuid.UUID) -> "DeleteModelOutput":
+    def output(self, deleted_id: UUID) -> "DeleteModelOutput":
         pass
 
 

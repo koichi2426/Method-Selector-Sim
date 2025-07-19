@@ -1,9 +1,5 @@
-import uuid
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.scenario import Scenario, ScenarioRepository
+from backend.domain import Scenario, ScenarioRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -25,7 +21,7 @@ class ScenarioMySQL(ScenarioRepository):
         try:
             self.db.execute(
                 query,
-                str(scenario.ID),
+                scenario.ID.value,
                 scenario.state,
                 scenario.method_group,
                 scenario.target_method,
@@ -35,10 +31,10 @@ class ScenarioMySQL(ScenarioRepository):
         except Exception as e:
             raise RuntimeError(f"error creating scenario: {e}")
 
-    def find_by_id(self, scenario_id: uuid.UUID) -> Optional[Scenario]:
+    def find_by_id(self, scenario_id: UUID) -> Optional[Scenario]:
         query = "SELECT * FROM scenarios WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(scenario_id))
+            row = self.db.query_row(query, scenario_id.value)
             return self._scan_row(row)
         except Exception:
             # "Not Found" のような特定のエラーはここで判定し、Noneを返す
@@ -73,15 +69,15 @@ class ScenarioMySQL(ScenarioRepository):
                 scenario.method_group,
                 scenario.target_method,
                 scenario.negative_method_group,
-                str(scenario.ID),
+                scenario.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating scenario: {e}")
 
-    def delete(self, scenario_id: uuid.UUID) -> None:
+    def delete(self, scenario_id: UUID) -> None:
         query = "DELETE FROM scenarios WHERE id = ?"
         try:
-            self.db.execute(query, str(scenario_id))
+            self.db.execute(query, scenario_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting scenario: {e}")
 
@@ -97,7 +93,7 @@ class ScenarioMySQL(ScenarioRepository):
                 negative_method_group,
             )
             return Scenario(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 state=state,
                 method_group=method_group,
                 target_method=target_method,
@@ -118,7 +114,7 @@ class ScenarioMySQL(ScenarioRepository):
                 negative_method_group,
             )
             return Scenario(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 state=state,
                 method_group=method_group,
                 target_method=target_method,

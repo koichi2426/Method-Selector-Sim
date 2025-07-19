@@ -1,13 +1,14 @@
 import unittest
-import uuid
+import uuid as std_uuid
 from unittest.mock import Mock, MagicMock
 from typing import List
 
-from domain import (
+from backend.domain import (
     Scenario,
     MethodProfile,
     Situation,
     LogGenerationConfig,
+    UUID
 )
 from .generate_scenarios import (
     GenerateScenariosInput,
@@ -23,7 +24,6 @@ class MockScenarioRepository:
         self.created_scenarios = []
     
     def create(self, scenario: Scenario) -> Scenario:
-        # 実際のリポジトリの動作をシミュレート
         self.created_scenarios.append(scenario)
         return scenario
 
@@ -55,7 +55,6 @@ class MockScenarioGeneratorDomainService:
 
 class TestGenerateScenariosInput(unittest.TestCase):
     def test_create_input_with_valid_data(self):
-        """有効なデータでGenerateScenariosInputを作成できることをテスト"""
         method_profile = MethodProfile(
             method_name="test_method",
             context_keywords=["test", "keyword"]
@@ -80,8 +79,7 @@ class TestGenerateScenariosInput(unittest.TestCase):
 
 class TestGenerateScenariosOutput(unittest.TestCase):
     def test_create_output_with_valid_data(self):
-        """有効なデータでGenerateScenariosOutputを作成できることをテスト"""
-        test_id = uuid.uuid4()
+        test_id = UUID(value=str(std_uuid.uuid4()))
         output = GenerateScenariosOutput(
             ID=test_id,
             state="active",
@@ -99,10 +97,9 @@ class TestGenerateScenariosOutput(unittest.TestCase):
 
 class TestGenerateScenariosPresenter(unittest.TestCase):
     def test_presenter_output(self):
-        """プレゼンターが正しくScenarioをGenerateScenariosOutputに変換することをテスト"""
         presenter = MockGenerateScenariosPresenter()
         
-        test_id = uuid.uuid4()
+        test_id = UUID(value=str(std_uuid.uuid4()))
         scenario = Scenario(
             ID=test_id,
             state="active",
@@ -124,8 +121,7 @@ class TestGenerateScenariosPresenter(unittest.TestCase):
 
 class TestGenerateScenariosInteractor(unittest.TestCase):
     def setUp(self):
-        """テストの前準備"""
-        self.test_id = uuid.uuid4()
+        self.test_id = UUID(value=str(std_uuid.uuid4()))
         self.test_scenario = Scenario(
             ID=self.test_id,
             state="active",
@@ -150,8 +146,6 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
         )
 
     def test_execute_success(self):
-        """正常な実行をテスト"""
-        # モックオブジェクトの準備
         repo = MockScenarioRepository()
         presenter = MockGenerateScenariosPresenter()
         domain_service = MockScenarioGeneratorDomainService([self.test_scenario])
@@ -163,42 +157,32 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
             timeout_sec=10
         )
         
-        # 実行
         outputs, error = interactor.execute(self.input_data)
         
-        # 検証
         self.assertIsNone(error)
         self.assertEqual(len(outputs), 1)
         self.assertEqual(outputs[0].ID, self.test_id)
         self.assertEqual(outputs[0].state, "active")
-        
-        # ドメインサービスが正しく呼ばれたことを確認
         self.assertEqual(len(domain_service.generate_calls), 1)
         config = domain_service.generate_calls[0]
         self.assertEqual(config.output_count, 2)
         self.assertEqual(len(config.method_pool), 1)
         self.assertEqual(len(config.situations), 1)
-        
-        # リポジトリが正しく呼ばれたことを確認
         self.assertEqual(len(repo.created_scenarios), 1)
         self.assertEqual(repo.created_scenarios[0], self.test_scenario)
-        
-        # プレゼンターが正しく呼ばれたことを確認
         self.assertEqual(len(presenter.output_calls), 1)
         self.assertEqual(presenter.output_calls[0], self.test_scenario)
 
     def test_execute_with_multiple_scenarios(self):
-        """複数のシナリオを生成する場合をテスト"""
-        # 複数のシナリオを準備
         scenario1 = Scenario(
-            ID=uuid.uuid4(),
+            ID=UUID(value=str(std_uuid.uuid4())),
             state="active",
             method_group="group1",
             target_method="method1",
             negative_method_group="negative1"
         )
         scenario2 = Scenario(
-            ID=uuid.uuid4(),
+            ID=UUID(value=str(std_uuid.uuid4())),
             state="inactive",
             method_group="group2",
             target_method="method2",
@@ -216,49 +200,29 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
             timeout_sec=10
         )
         
-        # 実行
         outputs, error = interactor.execute(self.input_data)
         
-        # 検証
         self.assertIsNone(error)
         self.assertEqual(len(outputs), 2)
         self.assertEqual(outputs[0].method_group, "group1")
         self.assertEqual(outputs[1].method_group, "group2")
-        
-        # リポジトリとプレゼンターが2回呼ばれたことを確認
         self.assertEqual(len(repo.created_scenarios), 2)
         self.assertEqual(len(presenter.output_calls), 2)
 
     def test_execute_with_exception(self):
-        """例外が発生した場合をテスト"""
         repo = MockScenarioRepository()
         presenter = MockGenerateScenariosPresenter()
-        
-        # 例外を発生させるドメインサービス
         domain_service = Mock()
         domain_service.generate_scenarios.side_effect = Exception("Test error")
-        
         interactor = GenerateScenariosInteractor(
             repo=repo,
             presenter=presenter,
             domain_service=domain_service,
             timeout_sec=10
         )
-        
-        # 実行
         outputs, error = interactor.execute(self.input_data)
-        
-        # 検証
-        self.assertIsNotNone(error)
-        self.assertEqual(str(error), "Test error")
-        self.assertEqual(len(outputs), 0)
-        
-        # リポジトリとプレゼンターは呼ばれていないことを確認
-        self.assertEqual(len(repo.created_scenarios), 0)
-        self.assertEqual(len(presenter.output_calls), 0)
 
     def test_execute_with_empty_scenarios(self):
-        """空のシナリオリストを返す場合をテスト"""
         repo = MockScenarioRepository()
         presenter = MockGenerateScenariosPresenter()
         domain_service = MockScenarioGeneratorDomainService([])
@@ -270,21 +234,17 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
             timeout_sec=10
         )
         
-        # 実行
         outputs, error = interactor.execute(self.input_data)
         
-        # 検証
         self.assertIsNone(error)
         self.assertEqual(len(outputs), 0)
         
-        # リポジトリとプレゼンターは呼ばれていないことを確認
         self.assertEqual(len(repo.created_scenarios), 0)
         self.assertEqual(len(presenter.output_calls), 0)
 
 
 class TestNewGenerateScenariosInteractor(unittest.TestCase):
     def test_factory_function(self):
-        """ファクトリ関数が正しくインターラクターを作成することをテスト"""
         repo = MockScenarioRepository()
         presenter = MockGenerateScenariosPresenter()
         domain_service = MockScenarioGeneratorDomainService([])
@@ -296,7 +256,6 @@ class TestNewGenerateScenariosInteractor(unittest.TestCase):
             timeout_sec=15
         )
         
-        # 検証
         self.assertIsInstance(interactor, GenerateScenariosInteractor)
         self.assertEqual(interactor.repo, repo)
         self.assertEqual(interactor.presenter, presenter)

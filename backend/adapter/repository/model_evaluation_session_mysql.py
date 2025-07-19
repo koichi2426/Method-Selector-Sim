@@ -1,15 +1,8 @@
-import uuid
 import json
 from datetime import datetime
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.model_evaluation_session import (
-    ModelEvaluationSession,
-    ModelEvaluationSessionRepository,
-)
-from domain.evaluation_summary import EvaluationSummary
+from backend.domain import ModelEvaluationSession, ModelEvaluationSessionRepository, UUID
+from backend.domain.evaluation_summary import EvaluationSummary
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -34,9 +27,9 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
         try:
             self.db.execute(
                 query,
-                str(session.ID),
-                str(session.TrainedModel_ID),
-                str(session.Dataset_ID),
+                session.ID.value,
+                session.TrainedModel_ID.value,
+                session.Dataset_ID.value,
                 summary_metrics_json,
                 session.created_at,
             )
@@ -44,10 +37,10 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
         except Exception as e:
             raise RuntimeError(f"error creating model evaluation session: {e}")
 
-    def find_by_id(self, session_id: uuid.UUID) -> Optional[ModelEvaluationSession]:
+    def find_by_id(self, session_id: UUID) -> Optional[ModelEvaluationSession]:
         query = "SELECT * FROM model_evaluation_sessions WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(session_id))
+            row = self.db.query_row(query, session_id.value)
             return self._scan_row(row)
         except Exception:
             return None
@@ -78,19 +71,19 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
         try:
             self.db.execute(
                 query,
-                str(session.TrainedModel_ID),
-                str(session.Dataset_ID),
+                session.TrainedModel_ID.value,
+                session.Dataset_ID.value,
                 summary_metrics_json,
                 session.created_at,
-                str(session.ID),
+                session.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating model evaluation session: {e}")
 
-    def delete(self, session_id: uuid.UUID) -> None:
+    def delete(self, session_id: UUID) -> None:
         query = "DELETE FROM model_evaluation_sessions WHERE id = ?"
         try:
-            self.db.execute(query, str(session_id))
+            self.db.execute(query, session_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting model evaluation session: {e}")
 
@@ -114,9 +107,9 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
             # JSON文字列をEvaluationSummaryオブジェクトに変換
             summary_metrics = EvaluationSummary(**json.loads(summary_metrics_json))
             return ModelEvaluationSession(
-                ID=uuid.UUID(id_str),
-                TrainedModel_ID=uuid.UUID(model_id_str),
-                Dataset_ID=uuid.UUID(dataset_id_str),
+                ID=UUID(value=id_str),
+                TrainedModel_ID=UUID(value=model_id_str),
+                Dataset_ID=UUID(value=dataset_id_str),
                 summary_metrics=summary_metrics,
                 created_at=created_at,
             )
@@ -142,9 +135,9 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
             )
             summary_metrics = EvaluationSummary(**json.loads(summary_metrics_json))
             return ModelEvaluationSession(
-                ID=uuid.UUID(id_str),
-                TrainedModel_ID=uuid.UUID(model_id_str),
-                Dataset_ID=uuid.UUID(dataset_id_str),
+                ID=UUID(value=id_str),
+                TrainedModel_ID=UUID(value=model_id_str),
+                Dataset_ID=UUID(value=dataset_id_str),
                 summary_metrics=summary_metrics,
                 created_at=created_at,
             )

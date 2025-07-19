@@ -1,12 +1,5 @@
-import uuid
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.triplet import (
-    Triplet,
-    TripletRepository,
-)
+from backend.domain import Triplet, TripletRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -28,8 +21,8 @@ class TripletMySQL(TripletRepository):
         try:
             self.db.execute(
                 query,
-                str(triplet.ID),
-                str(triplet.TrainingReadyScenario_ID),
+                triplet.ID.value,
+                triplet.TrainingReadyScenario_ID.value,
                 triplet.anchor,
                 triplet.positive,
                 triplet.negative,
@@ -38,10 +31,10 @@ class TripletMySQL(TripletRepository):
         except Exception as e:
             raise RuntimeError(f"error creating triplet: {e}")
 
-    def find_by_id(self, triplet_id: uuid.UUID) -> Optional[Triplet]:
+    def find_by_id(self, triplet_id: UUID) -> Optional[Triplet]:
         query = "SELECT * FROM triplets WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(triplet_id))
+            row = self.db.query_row(query, triplet_id.value)
             return self._scan_row(row)
         except Exception:
             return None
@@ -71,19 +64,19 @@ class TripletMySQL(TripletRepository):
         try:
             self.db.execute(
                 query,
-                str(triplet.TrainingReadyScenario_ID),
+                triplet.TrainingReadyScenario_ID.value,
                 triplet.anchor,
                 triplet.positive,
                 triplet.negative,
-                str(triplet.ID),
+                triplet.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating triplet: {e}")
 
-    def delete(self, triplet_id: uuid.UUID) -> None:
+    def delete(self, triplet_id: UUID) -> None:
         query = "DELETE FROM triplets WHERE id = ?"
         try:
-            self.db.execute(query, str(triplet_id))
+            self.db.execute(query, triplet_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting triplet: {e}")
 
@@ -105,8 +98,8 @@ class TripletMySQL(TripletRepository):
                 negative,
             )
             return Triplet(
-                ID=uuid.UUID(id_str),
-                TrainingReadyScenario_ID=uuid.UUID(trs_id_str),
+                ID=UUID(value=id_str),
+                TrainingReadyScenario_ID=UUID(value=trs_id_str),
                 anchor=anchor,
                 positive=positive,
                 negative=negative,
@@ -132,8 +125,8 @@ class TripletMySQL(TripletRepository):
                 negative,
             )
             return Triplet(
-                ID=uuid.UUID(id_str),
-                TrainingReadyScenario_ID=uuid.UUID(trs_id_str),
+                ID=UUID(value=id_str),
+                TrainingReadyScenario_ID=UUID(value=trs_id_str),
                 anchor=anchor,
                 positive=positive,
                 negative=negative,

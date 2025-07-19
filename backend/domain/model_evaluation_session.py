@@ -1,17 +1,18 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
-
-from .evaluation_summary import EvaluationSummary
+from .custom_uuid import UUID
 
 @dataclass
 class ModelEvaluationSession:
-    ID: uuid.UUID
-    TrainedModel_ID: uuid.UUID
-    Dataset_ID: uuid.UUID
-    summary_metrics: EvaluationSummary
+    ID: UUID
+    TrainedModel_ID: UUID
+    Dataset_ID: UUID
+    average_score: float
+    average_inference_time_ms: float
+    average_power_consumption_mw: float
+    total_test_cases: int
     created_at: datetime
 
 class ModelEvaluationSessionRepository(abc.ABC):
@@ -20,7 +21,7 @@ class ModelEvaluationSessionRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, session_id: uuid.UUID) -> Optional[ModelEvaluationSession]:
+    def find_by_id(self, session_id: UUID) -> Optional[ModelEvaluationSession]:
         pass
 
     @abc.abstractmethod
@@ -32,23 +33,26 @@ class ModelEvaluationSessionRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, session_id: uuid.UUID) -> None:
+    def delete(self, session_id: UUID) -> None:
         pass
 
 def NewModelEvaluationSession(
-    ID: uuid.UUID,  # IDを引数として受け取る
-    TrainedModel_ID: uuid.UUID,
-    Dataset_ID: uuid.UUID,
-    summary_metrics: EvaluationSummary,
-    created_at: datetime,  # created_atを引数として受け取る
+    ID: UUID,
+    TrainedModel_ID: UUID,
+    Dataset_ID: UUID,
+    average_score: float,
+    average_inference_time_ms: float,
+    average_power_consumption_mw: float,
+    total_test_cases: int,
+    created_at: datetime,
 ) -> ModelEvaluationSession:
-    """
-    ModelEvaluationSessionインスタンスを生成するファクトリ関数。
-    """
     return ModelEvaluationSession(
-        ID=ID,  # 引数で受け取ったIDを使用
+        ID=ID,
         TrainedModel_ID=TrainedModel_ID,
         Dataset_ID=Dataset_ID,
-        summary_metrics=summary_metrics,
-        created_at=created_at,  # 引数で受け取ったcreated_atを使用
+        average_score=average_score,
+        average_inference_time_ms=average_inference_time_ms,
+        average_power_consumption_mw=average_power_consumption_mw,
+        total_test_cases=total_test_cases,
+        created_at=created_at,
     )

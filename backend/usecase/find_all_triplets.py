@@ -1,13 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol, List
-
-
-from domain import (
-    Triplet,
-    TripletRepository,
-)
+from backend.domain import Triplet, TripletRepository, UUID
 
 
 class FindAllTripletsUseCase(Protocol):
@@ -17,8 +11,8 @@ class FindAllTripletsUseCase(Protocol):
 
 @dataclass
 class FindAllTripletsOutput:
-    ID: uuid.UUID
-    TrainingReadyScenario_ID: uuid.UUID
+    ID: UUID
+    TrainingReadyScenario_ID: UUID
     anchor: str
     positive: str
     negative: str

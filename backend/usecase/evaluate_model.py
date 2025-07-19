@@ -1,19 +1,8 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
 from datetime import datetime
-
-from domain import (
-    TrainedModel,
-    TrainedModelRepository,
-    Dataset,
-    DatasetRepository,
-    ModelEvaluationSession,
-    ModelEvaluationSessionRepository,
-    EvaluationSummary,
-    PerformanceEvaluatorDomainService,
-)
+from backend.domain import TrainedModel, TrainedModelRepository, Dataset, DatasetRepository, ModelEvaluationSession, ModelEvaluationSessionRepository, EvaluationSummary, PerformanceEvaluatorDomainService, UUID
 
 
 class EvaluateModelUseCase(Protocol):
@@ -25,8 +14,8 @@ class EvaluateModelUseCase(Protocol):
 
 @dataclass
 class EvaluateModelInput:
-    model_id: uuid.UUID
-    dataset_id: uuid.UUID
+    model_id: UUID
+    dataset_id: UUID
 
 
 @dataclass
@@ -39,9 +28,9 @@ class EvaluationSummaryOutput:
 
 @dataclass
 class EvaluateModelOutput:
-    ID: uuid.UUID
-    TrainedModel_ID: uuid.UUID
-    Dataset_ID: uuid.UUID
+    ID: UUID
+    TrainedModel_ID: UUID
+    Dataset_ID: UUID
     summary_metrics: EvaluationSummaryOutput
     created_at: str
 
@@ -90,6 +79,7 @@ class EvaluateModelInteractor:
             return output, None
 
         except Exception as e:
+            from backend.domain import UUID
             empty_summary = EvaluationSummaryOutput(
                 average_score=0.0,
                 average_inference_time_ms=0.0,
@@ -97,7 +87,7 @@ class EvaluateModelInteractor:
                 total_test_cases=0,
             )
             empty_output = EvaluateModelOutput(
-                ID=uuid.UUID(int=0),
+                ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 TrainedModel_ID=input_data.model_id,
                 Dataset_ID=input_data.dataset_id,
                 summary_metrics=empty_summary,

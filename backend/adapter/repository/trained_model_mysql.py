@@ -1,10 +1,6 @@
-import uuid
 from datetime import datetime
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.trained_model import TrainedModel, TrainedModelRepository
+from backend.domain import TrainedModel, TrainedModelRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -26,9 +22,9 @@ class TrainedModelMySQL(TrainedModelRepository):
         try:
             self.db.execute(
                 query,
-                str(model.ID),
+                model.ID.value,
                 model.name,
-                str(model.Dataset_ID),
+                model.Dataset_ID.value,
                 model.description,
                 model.file_path,
                 model.created_at,
@@ -37,10 +33,10 @@ class TrainedModelMySQL(TrainedModelRepository):
         except Exception as e:
             raise RuntimeError(f"error creating trained model: {e}")
 
-    def find_by_id(self, model_id: uuid.UUID) -> Optional[TrainedModel]:
+    def find_by_id(self, model_id: UUID) -> Optional[TrainedModel]:
         query = "SELECT * FROM trained_models WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(model_id))
+            row = self.db.query_row(query, model_id.value)
             return self._scan_row(row)
         except Exception:
             return None
@@ -72,19 +68,19 @@ class TrainedModelMySQL(TrainedModelRepository):
             self.db.execute(
                 query,
                 model.name,
-                str(model.Dataset_ID),
+                model.Dataset_ID.value,
                 model.description,
                 model.file_path,
                 model.created_at,
-                str(model.ID),
+                model.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating trained model: {e}")
 
-    def delete(self, model_id: uuid.UUID) -> None:
+    def delete(self, model_id: UUID) -> None:
         query = "DELETE FROM trained_models WHERE id = ?"
         try:
-            self.db.execute(query, str(model_id))
+            self.db.execute(query, model_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting trained model: {e}")
 
@@ -108,9 +104,9 @@ class TrainedModelMySQL(TrainedModelRepository):
                 created_at,
             )
             return TrainedModel(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 name=name,
-                Dataset_ID=uuid.UUID(dataset_id_str),
+                Dataset_ID=UUID(value=dataset_id_str),
                 description=description,
                 file_path=file_path,
                 created_at=created_at,
@@ -138,9 +134,9 @@ class TrainedModelMySQL(TrainedModelRepository):
                 created_at,
             )
             return TrainedModel(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 name=name,
-                Dataset_ID=uuid.UUID(dataset_id_str),
+                Dataset_ID=UUID(value=dataset_id_str),
                 description=description,
                 file_path=file_path,
                 created_at=created_at,

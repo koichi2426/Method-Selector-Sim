@@ -1,8 +1,7 @@
 import abc
-import uuid  # uuidモジュールをインポート
 from typing import List
-
 from .trained_model import TrainedModel
+from .custom_uuid import UUID
 
 class ModelRegistryDomainService(abc.ABC):
     @abc.abstractmethod
@@ -10,5 +9,5 @@ class ModelRegistryDomainService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def deleteModel(self, id: uuid.UUID) -> None: # 引数の型も変更
+    def deleteModel(self, id: UUID) -> None:
         pass

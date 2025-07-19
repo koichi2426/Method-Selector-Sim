@@ -1,12 +1,7 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol
-
-
-from domain import (
-    TripletRepository,
-)
+from backend.domain import TripletRepository, UUID
 
 
 class DeleteTripletsUseCase(Protocol):
@@ -18,18 +13,18 @@ class DeleteTripletsUseCase(Protocol):
 
 @dataclass
 class DeleteTripletsInput:
-    triplet_id: uuid.UUID
+    triplet_id: UUID
 
 
 @dataclass
 class DeleteTripletsOutput:
-    ID: uuid.UUID
+    ID: UUID
     message: str
 
 
 class DeleteTripletsPresenter(abc.ABC):
     @abc.abstractmethod
-    def output(self, deleted_id: uuid.UUID) -> "DeleteTripletsOutput":
+    def output(self, deleted_id: UUID) -> "DeleteTripletsOutput":
         pass
 
 

@@ -1,10 +1,8 @@
 import abc
-import uuid
 from typing import List
-
 from .scenario import Scenario
 from .training_ready_scenario import TrainingReadyScenario
-
+from .custom_uuid import UUID
 
 class PreprocessorDomainService(abc.ABC):
     @abc.abstractmethod
@@ -16,5 +14,5 @@ class PreprocessorDomainService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete_scenario(self, id: uuid.UUID) -> None:
+    def delete_scenario(self, id: UUID) -> None:
         pass

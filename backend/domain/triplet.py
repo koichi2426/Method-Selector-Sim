@@ -1,12 +1,12 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import List, Optional
+from .custom_uuid import UUID
 
 @dataclass
 class Triplet:
-    ID: uuid.UUID
-    TrainingReadyScenario_ID: uuid.UUID
+    ID: UUID
+    TrainingReadyScenario_ID: UUID
     anchor: str
     positive: str
     negative: str
@@ -17,7 +17,7 @@ class TripletRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def find_by_id(self, triplet_id: uuid.UUID) -> Optional[Triplet]:
+    def find_by_id(self, triplet_id: UUID) -> Optional[Triplet]:
         pass
 
     @abc.abstractmethod
@@ -29,19 +29,16 @@ class TripletRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def delete(self, triplet_id: uuid.UUID) -> None:
+    def delete(self, triplet_id: UUID) -> None:
         pass
 
 def NewTriplet(
-    ID: uuid.UUID,
-    TrainingReadyScenario_ID: uuid.UUID,
+    ID: UUID,
+    TrainingReadyScenario_ID: UUID,
     anchor: str,
     positive: str,
     negative: str,
 ) -> Triplet:
-    """
-    Tripletインスタンスを生成するファクトリ関数。
-    """
     return Triplet(
         ID=ID,
         TrainingReadyScenario_ID=TrainingReadyScenario_ID,

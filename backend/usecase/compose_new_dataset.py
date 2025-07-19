@@ -1,15 +1,8 @@
 import abc
-import uuid
 from dataclasses import dataclass
 from typing import Protocol, List
 from datetime import datetime
-
-from domain import (
-    Dataset,
-    DatasetRepository,
-    NewDataset,
-    NewUUID,
-)
+from backend.domain import Dataset, DatasetRepository, NewDataset, NewUUID, UUID
 
 
 class ComposeNewDatasetUseCase(Protocol):
@@ -23,16 +16,16 @@ class ComposeNewDatasetUseCase(Protocol):
 class ComposeNewDatasetInput:
     name: str
     description: str
-    triplet_ids: List[uuid.UUID]
+    triplet_ids: List[UUID]
 
 
 @dataclass
 class ComposeNewDatasetOutput:
-    ID: uuid.UUID
+    ID: UUID
     name: str
     description: str
     type: str
-    Triplet_ids: List[uuid.UUID]
+    Triplet_ids: List[UUID]
     created_at: str
 
 
@@ -63,7 +56,7 @@ class ComposeNewDatasetInteractor:
                 description=input_data.description,
                 type="training",
                 Triplet_ids=input_data.triplet_ids,
-                created_at=datetime.now(),
+                created_at=datetime.now().isoformat(),
             )
 
             created_dataset = self.dataset_repo.create(dataset)
@@ -73,8 +66,9 @@ class ComposeNewDatasetInteractor:
             return output, None
 
         except Exception as e:
+            from backend.domain import UUID
             empty_output = ComposeNewDatasetOutput(
-                ID=uuid.UUID(int=0),
+                ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 name="",
                 description="",
                 type="",

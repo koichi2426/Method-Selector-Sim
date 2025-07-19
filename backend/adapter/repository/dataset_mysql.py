@@ -1,11 +1,7 @@
-import uuid
 import json
 from datetime import datetime
 from typing import List, Optional
-
-# --- 依存するインターフェースとドメインオブジェクトをインポート ---
-# (実際のプロジェクト構成に合わせてパスを調整してください)
-from domain.dataset import Dataset, DatasetRepository
+from backend.domain import Dataset, DatasetRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 
@@ -25,12 +21,12 @@ class DatasetMySQL(DatasetRepository):
             ) VALUES (?, ?, ?, ?, ?, ?)
         """
         # triplet_ids (List[UUID]) をJSON文字列に変換
-        triplet_ids_json = json.dumps([str(tid) for tid in dataset.triplet_ids])
+        triplet_ids_json = json.dumps([tid.value for tid in dataset.Triplet_ids])
 
         try:
             self.db.execute(
                 query,
-                str(dataset.ID),
+                dataset.ID.value,
                 dataset.name,
                 dataset.description,
                 dataset.type,
@@ -41,10 +37,10 @@ class DatasetMySQL(DatasetRepository):
         except Exception as e:
             raise RuntimeError(f"error creating dataset: {e}")
 
-    def find_by_id(self, dataset_id: uuid.UUID) -> Optional[Dataset]:
+    def find_by_id(self, dataset_id: UUID) -> Optional[Dataset]:
         query = "SELECT * FROM datasets WHERE id = ? LIMIT 1"
         try:
-            row = self.db.query_row(query, str(dataset_id))
+            row = self.db.query_row(query, dataset_id.value)
             return self._scan_row(row)
         except Exception:
             return None
@@ -72,7 +68,7 @@ class DatasetMySQL(DatasetRepository):
                 created_at = ?
             WHERE id = ?
         """
-        triplet_ids_json = json.dumps([str(tid) for tid in dataset.triplet_ids])
+        triplet_ids_json = json.dumps([tid.value for tid in dataset.Triplet_ids])
         try:
             self.db.execute(
                 query,
@@ -81,15 +77,15 @@ class DatasetMySQL(DatasetRepository):
                 dataset.type,
                 triplet_ids_json,
                 dataset.created_at,
-                str(dataset.ID),
+                dataset.ID.value,
             )
         except Exception as e:
             raise RuntimeError(f"error updating dataset: {e}")
 
-    def delete(self, dataset_id: uuid.UUID) -> None:
+    def delete(self, dataset_id: UUID) -> None:
         query = "DELETE FROM datasets WHERE id = ?"
         try:
-            self.db.execute(query, str(dataset_id))
+            self.db.execute(query, dataset_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting dataset: {e}")
 
@@ -113,13 +109,13 @@ class DatasetMySQL(DatasetRepository):
                 created_at,
             )
             # JSON文字列をList[UUID]に変換
-            triplet_ids = [uuid.UUID(tid) for tid in json.loads(triplet_ids_json)]
+            triplet_ids = [UUID(value=tid) for tid in json.loads(triplet_ids_json)]
             return Dataset(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 name=name,
                 description=description,
                 type=type,
-                triplet_ids=triplet_ids,
+                Triplet_ids=triplet_ids,
                 created_at=created_at,
             )
         except Exception:
@@ -144,13 +140,13 @@ class DatasetMySQL(DatasetRepository):
                 triplet_ids_json,
                 created_at,
             )
-            triplet_ids = [uuid.UUID(tid) for tid in json.loads(triplet_ids_json)]
+            triplet_ids = [UUID(value=tid) for tid in json.loads(triplet_ids_json)]
             return Dataset(
-                ID=uuid.UUID(id_str),
+                ID=UUID(value=id_str),
                 name=name,
                 description=description,
                 type=type,
-                triplet_ids=triplet_ids,
+                Triplet_ids=triplet_ids,
                 created_at=created_at,
             )
         except Exception:
