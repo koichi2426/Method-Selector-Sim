@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.evaluate_model import (
+from usecase.evaluate_model import (
     EvaluateModelUseCase,
     EvaluateModelInput,
     EvaluateModelOutput,

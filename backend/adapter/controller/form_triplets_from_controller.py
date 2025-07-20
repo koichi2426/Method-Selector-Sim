@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.form_triplets_from import (
+from usecase.form_triplets_from import (
     FormTripletsFromUseCase,
     FormTripletsFromInput,
     FormTripletsFromOutput,

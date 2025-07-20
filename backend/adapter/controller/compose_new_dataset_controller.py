@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.compose_new_dataset import (
+from usecase.compose_new_dataset import (
     ComposeNewDatasetUseCase,
     ComposeNewDatasetInput,
     ComposeNewDatasetOutput,

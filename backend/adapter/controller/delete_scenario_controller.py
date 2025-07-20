@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.delete_scenario import (
+from usecase.delete_scenario import (
     DeleteScenarioUseCase,
     DeleteScenarioInput,
     DeleteScenarioOutput,

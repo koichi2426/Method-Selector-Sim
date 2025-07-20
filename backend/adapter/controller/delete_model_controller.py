@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.delete_model import (
+from usecase.delete_model import (
     DeleteModelUseCase,
     DeleteModelInput,
     DeleteModelOutput,

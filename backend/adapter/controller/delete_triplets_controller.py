@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from backend.usecase.delete_triplets import (
+from usecase.delete_triplets import (
     DeleteTripletsUseCase,
     DeleteTripletsInput,
     DeleteTripletsOutput,
