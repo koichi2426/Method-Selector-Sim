@@ -13,7 +13,8 @@ services:
     env_file:
       - ./.env # データベース接続情報などを読み込む
     depends_on:
-      - db   # dbサービスが起動してから開始する
+      db:
+        condition: service_healthy
 
   # フロントエンドサービス (Next.js)
   frontend:
@@ -35,6 +36,11 @@ services:
       - ./.env # MySQLのパスワード等を読み込む
     volumes:
       - db-data:/var/lib/mysql # データを永続化する
+    healthcheck: # dbサービスが起動してから開始する
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 # データベースのデータを永続化するためのVolumeを定義
 volumes:
