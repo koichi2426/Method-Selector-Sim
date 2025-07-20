@@ -1,5 +1,5 @@
-from backend.usecase.delete_dataset import DeleteDatasetPresenter, DeleteDatasetOutput
-from backend.domain import UUID
+from usecase.delete_dataset import DeleteDatasetPresenter, DeleteDatasetOutput
+from domain import UUID
 
 class DeleteDatasetPresenterImpl(DeleteDatasetPresenter):
     def output(self, deleted_id: UUID) -> DeleteDatasetOutput:

@@ -1,5 +1,5 @@
-from backend.usecase.compose_new_dataset import ComposeNewDatasetPresenter, ComposeNewDatasetOutput
-from backend.domain import Dataset, UUID
+from usecase.compose_new_dataset import ComposeNewDatasetPresenter, ComposeNewDatasetOutput
+from domain import Dataset, UUID
 
 class ComposeNewDatasetPresenterImpl(ComposeNewDatasetPresenter):
     def output(self, dataset: Dataset) -> ComposeNewDatasetOutput:

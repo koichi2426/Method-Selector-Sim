@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol, List
 from datetime import datetime
-from backend.domain import TrainedModel, TrainedModelRepository, UUID
+from domain import TrainedModel, TrainedModelRepository, UUID
 
 
 class FindAllModelsUseCase(Protocol):

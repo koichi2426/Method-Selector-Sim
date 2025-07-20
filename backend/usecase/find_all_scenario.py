@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol, List
-from backend.domain import Scenario, ScenarioRepository, UUID
+from domain import Scenario, ScenarioRepository, UUID
 
 
 class FindAllScenarioUseCase(Protocol):

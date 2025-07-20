@@ -1,5 +1,5 @@
 from typing import List, Optional
-from backend.domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
+from domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 

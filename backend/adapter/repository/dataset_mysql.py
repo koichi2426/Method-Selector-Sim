@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from typing import List, Optional
-from backend.domain import Dataset, DatasetRepository, UUID
+from domain import Dataset, DatasetRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from backend.domain import TrainedModel, TrainedModelRepository, UUID
+from domain import TrainedModel, TrainedModelRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 

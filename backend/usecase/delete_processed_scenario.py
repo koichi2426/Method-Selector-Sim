@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol
-from backend.domain import TrainingReadyScenarioRepository, UUID
+from domain import TrainingReadyScenarioRepository, UUID
 
 
 class DeleteProcessedScenarioUseCase(Protocol):

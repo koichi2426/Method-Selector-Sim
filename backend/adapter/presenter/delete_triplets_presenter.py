@@ -1,5 +1,5 @@
-from backend.usecase.delete_triplets import DeleteTripletsPresenter, DeleteTripletsOutput
-from backend.domain import UUID
+from usecase.delete_triplets import DeleteTripletsPresenter, DeleteTripletsOutput
+from domain import UUID
 
 class DeleteTripletsPresenterImpl(DeleteTripletsPresenter):
     def output(self, deleted_id: UUID) -> DeleteTripletsOutput:

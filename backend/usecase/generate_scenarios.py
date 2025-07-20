@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import List, Protocol
-from backend.domain import Scenario, ScenarioRepository, MethodProfile, Situation, ScenarioGeneratorDomainService, LogGenerationConfig, UUID
+from domain import Scenario, ScenarioRepository, MethodProfile, Situation, ScenarioGeneratorDomainService, LogGenerationConfig, UUID
 
 class GenerateScenariosUseCase(Protocol):
     def execute(

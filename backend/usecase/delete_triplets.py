@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol
-from backend.domain import TripletRepository, UUID
+from domain import TripletRepository, UUID
 
 
 class DeleteTripletsUseCase(Protocol):

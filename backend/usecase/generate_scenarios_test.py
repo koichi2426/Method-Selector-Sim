@@ -3,7 +3,7 @@ import uuid as std_uuid
 from unittest.mock import Mock, MagicMock
 from typing import List
 
-from backend.domain import (
+from domain import (
     Scenario,
     MethodProfile,
     Situation,

@@ -1,5 +1,5 @@
-from backend.usecase.train_new_model import TrainNewModelPresenter, TrainNewModelOutput
-from backend.domain import TrainedModel, UUID
+from usecase.train_new_model import TrainNewModelPresenter, TrainNewModelOutput
+from domain import TrainedModel, UUID
 
 class TrainNewModelPresenterImpl(TrainNewModelPresenter):
     def output(self, trained_model: TrainedModel) -> TrainNewModelOutput:

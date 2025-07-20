@@ -1,5 +1,5 @@
-from backend.usecase.delete_processed_scenario import DeleteProcessedScenarioPresenter, DeleteProcessedScenarioOutput
-from backend.domain import UUID
+from usecase.delete_processed_scenario import DeleteProcessedScenarioPresenter, DeleteProcessedScenarioOutput
+from domain import UUID
 
 class DeleteProcessedScenarioPresenterImpl(DeleteProcessedScenarioPresenter):
     def output(self, deleted_id: UUID) -> DeleteProcessedScenarioOutput:

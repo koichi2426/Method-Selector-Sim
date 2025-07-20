@@ -1,5 +1,5 @@
-from backend.usecase.form_triplets_from import FormTripletsFromPresenter, FormTripletsFromOutput
-from backend.domain import Triplet, UUID
+from usecase.form_triplets_from import FormTripletsFromPresenter, FormTripletsFromOutput
+from domain import Triplet, UUID
 
 class FormTripletsFromPresenterImpl(FormTripletsFromPresenter):
     def output(self, triplet: Triplet) -> FormTripletsFromOutput:

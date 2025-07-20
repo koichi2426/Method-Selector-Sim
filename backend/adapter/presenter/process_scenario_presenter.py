@@ -1,5 +1,5 @@
-from backend.usecase.process_scenario import ProcessScenarioPresenter, ProcessScenarioOutput
-from backend.domain import TrainingReadyScenario, UUID
+from usecase.process_scenario import ProcessScenarioPresenter, ProcessScenarioOutput
+from domain import TrainingReadyScenario, UUID
 
 class ProcessScenarioPresenterImpl(ProcessScenarioPresenter):
     def output(self, training_ready_scenario: TrainingReadyScenario) -> ProcessScenarioOutput:

@@ -1,6 +1,6 @@
 from typing import List
-from backend.usecase.find_all_models import FindAllModelsPresenter, FindAllModelsOutput
-from backend.domain import TrainedModel, UUID
+from usecase.find_all_models import FindAllModelsPresenter, FindAllModelsOutput
+from domain import TrainedModel, UUID
 
 class FindAllModelsPresenterImpl(FindAllModelsPresenter):
     def output(self, models: List[TrainedModel]) -> List[FindAllModelsOutput]:

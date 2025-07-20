@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol, List
 from datetime import datetime
-from backend.domain import Dataset, DatasetRepository, NewDataset, NewUUID, UUID
+from domain import Dataset, DatasetRepository, NewDataset, NewUUID, UUID
 
 
 class ComposeNewDatasetUseCase(Protocol):
@@ -66,7 +66,7 @@ class ComposeNewDatasetInteractor:
             return output, None
 
         except Exception as e:
-            from backend.domain import UUID
+            from domain import UUID
             empty_output = ComposeNewDatasetOutput(
                 ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 name="",

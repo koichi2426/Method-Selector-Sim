@@ -1,6 +1,6 @@
 from typing import List
-from backend.usecase.find_all_processed_scenarios import FindAllProcessedScenariosPresenter, FindAllProcessedScenariosOutput
-from backend.domain import TrainingReadyScenario, UUID
+from usecase.find_all_processed_scenarios import FindAllProcessedScenariosPresenter, FindAllProcessedScenariosOutput
+from domain import TrainingReadyScenario, UUID
 
 class FindAllProcessedScenariosPresenterImpl(FindAllProcessedScenariosPresenter):
     def output(self, scenarios: List[TrainingReadyScenario]) -> List[FindAllProcessedScenariosOutput]:
