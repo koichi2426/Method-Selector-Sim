@@ -1,10 +1,8 @@
 import uvicorn
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Any, Dict, List, Optional
-import time
-import json
+from typing import Any, Dict, List
 
 # Import controllers
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -24,21 +22,21 @@ from adapter.controller.delete_dataset_controller import DeleteDatasetController
 from adapter.controller.find_all_processed_scenarios_controller import FindAllProcessedScenariosController
 
 # Import usecases
-from usecase.find_all_scenario import FindAllScenarioUseCase, FindAllScenarioOutput, FindAllScenarioPresenter, new_find_all_scenario_interactor
-from usecase.generate_scenarios import GenerateScenariosUseCase, GenerateScenariosInput, GenerateScenariosOutput, GenerateScenariosPresenter, new_generate_scenarios_interactor
-from usecase.train_new_model import TrainNewModelUseCase, TrainNewModelInput, TrainNewModelOutput, TrainNewModelPresenter, new_train_new_model_interactor
-from usecase.evaluate_model import EvaluateModelUseCase, EvaluateModelInput, EvaluateModelOutput, EvaluateModelPresenter, new_evaluate_model_interactor
-from usecase.find_all_models import FindAllModelsUseCase, FindAllModelsOutput, FindAllModelsPresenter, new_find_all_models_interactor
-from usecase.find_all_triplets import FindAllTripletsUseCase, FindAllTripletsOutput, FindAllTripletsPresenter, new_find_all_triplets_interactor
-from usecase.form_triplets_from import FormTripletsFromUseCase, FormTripletsFromInput, FormTripletsFromOutput, FormTripletsFromPresenter, new_form_triplets_from_interactor
-from usecase.process_scenario import ProcessScenarioUseCase, ProcessScenarioInput, ProcessScenarioOutput, ProcessScenarioPresenter, new_process_scenario_interactor
-from usecase.delete_scenario import DeleteScenarioUseCase, DeleteScenarioInput, DeleteScenarioOutput, DeleteScenarioPresenter, new_delete_scenario_interactor
-from usecase.delete_model import DeleteModelUseCase, DeleteModelInput, DeleteModelOutput, DeleteModelPresenter, new_delete_model_interactor
-from usecase.delete_triplets import DeleteTripletsUseCase, DeleteTripletsInput, DeleteTripletsOutput, DeleteTripletsPresenter, new_delete_triplets_interactor
-from usecase.delete_processed_scenario import DeleteProcessedScenarioUseCase, DeleteProcessedScenarioInput, DeleteProcessedScenarioOutput, DeleteProcessedScenarioPresenter, new_delete_processed_scenario_interactor
-from usecase.compose_new_dataset import ComposeNewDatasetUseCase, ComposeNewDatasetInput, ComposeNewDatasetOutput, ComposeNewDatasetPresenter, new_compose_new_dataset_interactor
-from usecase.delete_dataset import DeleteDatasetUseCase, DeleteDatasetInput, DeleteDatasetOutput, DeleteDatasetPresenter, new_delete_dataset_interactor
-from usecase.find_all_processed_scenarios import FindAllProcessedScenariosUseCase, FindAllProcessedScenariosOutput, FindAllProcessedScenariosPresenter, new_find_all_processed_scenarios_interactor
+from usecase.find_all_scenario import FindAllScenarioInput, new_find_all_scenario_interactor
+from usecase.generate_scenarios import GenerateScenariosInput, new_generate_scenarios_interactor
+from usecase.train_new_model import TrainNewModelInput, new_train_new_model_interactor
+from usecase.evaluate_model import EvaluateModelInput, new_evaluate_model_interactor
+from usecase.find_all_models import FindAllModelsInput, new_find_all_models_interactor
+from usecase.find_all_triplets import FindAllTripletsInput, new_find_all_triplets_interactor
+from usecase.form_triplets_from import FormTripletsFromInput, new_form_triplets_from_interactor
+from usecase.process_scenario import ProcessScenarioInput, new_process_scenario_interactor
+from usecase.delete_scenario import DeleteScenarioInput, new_delete_scenario_interactor
+from usecase.delete_model import DeleteModelInput, new_delete_model_interactor
+from usecase.delete_triplets import DeleteTripletsInput, new_delete_triplets_interactor
+from usecase.delete_processed_scenario import DeleteProcessedScenarioInput, new_delete_processed_scenario_interactor
+from usecase.compose_new_dataset import ComposeNewDatasetInput, new_compose_new_dataset_interactor
+from usecase.delete_dataset import DeleteDatasetInput, new_delete_dataset_interactor
+from usecase.find_all_processed_scenarios import FindAllProcessedScenariosInput, new_find_all_processed_scenarios_interactor
 
 # Import repositories
 from adapter.repository.scenario_mysql import ScenarioMySQL
@@ -71,10 +69,7 @@ from backend.domain import (
     ModelTrainerDomainService,
     PerformanceEvaluatorDomainService,
     TripletFormerDomainService,
-    PreprocessorDomainService,
-    TripletDataStoreDomainService,
-    ProcessedDataStoreDomainService,
-    ModelRegistryDomainService
+    PreprocessorDomainService
 )
 
 # Import SQL handler
@@ -106,9 +101,6 @@ class ComposeNewDatasetRequest(BaseModel):
     name: str
     description: str
     triplet_ids: List[str]
-
-class DeleteRequest(BaseModel):
-    id: str
 
 class FastAPIEngine:
     """
