@@ -140,35 +140,35 @@ class FastAPIEngine:
         GoのsetAppHandlersメソッドに相当。
         """
         # Scenario endpoints
-        self.router.get("/v1/scenarios")(self._build_find_all_scenario_handler())
-        self.router.post("/v1/scenarios/generate")(self._build_generate_scenarios_handler())
-        self.router.delete("/v1/scenarios/{scenario_id}")(self._build_delete_scenario_handler())
-        self.router.post("/v1/scenarios/process")(self._build_process_scenario_handler())
+        self.router.get("/v1/scenarios")(self._build_find_all_scenario_action())
+        self.router.post("/v1/scenarios/generate")(self._build_generate_scenarios_action())
+        self.router.delete("/v1/scenarios/{scenario_id}")(self._build_delete_scenario_action())
+        self.router.post("/v1/scenarios/process")(self._build_process_scenario_action())
         
         # Processed scenarios endpoints
-        self.router.get("/v1/processed-scenarios")(self._build_find_all_processed_scenarios_handler())
-        self.router.delete("/v1/processed-scenarios/{scenario_id}")(self._build_delete_processed_scenario_handler())
+        self.router.get("/v1/processed-scenarios")(self._build_find_all_processed_scenarios_action())
+        self.router.delete("/v1/processed-scenarios/{scenario_id}")(self._build_delete_processed_scenario_action())
 
         # Model endpoints
-        self.router.get("/v1/models")(self._build_find_all_models_handler())
-        self.router.post("/v1/models/train")(self._build_train_new_model_handler())
-        self.router.post("/v1/models/evaluate")(self._build_evaluate_model_handler())
-        self.router.delete("/v1/models/{model_id}")(self._build_delete_model_handler())
+        self.router.get("/v1/models")(self._build_find_all_models_action())
+        self.router.post("/v1/models/train")(self._build_train_new_model_action())
+        self.router.post("/v1/models/evaluate")(self._build_evaluate_model_action())
+        self.router.delete("/v1/models/{model_id}")(self._build_delete_model_action())
 
         # Dataset endpoints
-        self.router.post("/v1/datasets")(self._build_compose_new_dataset_handler())
-        self.router.delete("/v1/datasets/{dataset_id}")(self._build_delete_dataset_handler())
+        self.router.post("/v1/datasets")(self._build_compose_new_dataset_action())
+        self.router.delete("/v1/datasets/{dataset_id}")(self._build_delete_dataset_action())
 
         # Triplet endpoints
-        self.router.get("/v1/triplets")(self._build_find_all_triplets_handler())
-        self.router.post("/v1/triplets/form")(self._build_form_triplets_from_handler())
-        self.router.delete("/v1/triplets/{triplet_id}")(self._build_delete_triplets_handler())
+        self.router.get("/v1/triplets")(self._build_find_all_triplets_action())
+        self.router.post("/v1/triplets/form")(self._build_form_triplets_from_action())
+        self.router.delete("/v1/triplets/{triplet_id}")(self._build_delete_triplets_action())
 
         # Health check
         self.router.get("/v1/health")(self._healthcheck())
 
-    def _build_find_all_scenario_handler(self):
-        """FindAllScenarioのハンドラ関数を構築する"""
+    def _build_find_all_scenario_action(self):
+        """FindAllScenarioのアクション関数を構築する"""
         async def handler():
             repo = ScenarioMySQL(self.db)
             presenter = new_find_all_scenario_presenter()
@@ -182,8 +182,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_generate_scenarios_handler(self):
-        """GenerateScenariosのハンドラ関数を構築する"""
+    def _build_generate_scenarios_action(self):
+        """GenerateScenariosのアクション関数を構築する"""
         async def handler(request: GenerateScenariosRequest):
             repo = ScenarioMySQL(self.db)
             presenter = new_generate_scenarios_presenter()
@@ -205,8 +205,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_train_new_model_handler(self):
-        """TrainNewModelのハンドラ関数を構築する"""
+    def _build_train_new_model_action(self):
+        """TrainNewModelのアクション関数を構築する"""
         async def handler(request: TrainNewModelRequest):
             dataset_repo = DatasetMySQL(self.db)
             trained_model_repo = TrainedModelMySQL(self.db)
@@ -231,8 +231,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_evaluate_model_handler(self):
-        """EvaluateModelのハンドラ関数を構築する"""
+    def _build_evaluate_model_action(self):
+        """EvaluateModelのアクション関数を構築する"""
         async def handler(request: EvaluateModelRequest):
             model_repo = TrainedModelMySQL(self.db)
             dataset_repo = DatasetMySQL(self.db)
@@ -256,8 +256,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_find_all_models_handler(self):
-        """FindAllModelsのハンドラ関数を構築する"""
+    def _build_find_all_models_action(self):
+        """FindAllModelsのアクション関数を構築する"""
         async def handler():
             repo = TrainedModelMySQL(self.db)
             presenter = new_find_all_models_presenter()
@@ -271,8 +271,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_find_all_triplets_handler(self):
-        """FindAllTripletsのハンドラ関数を構築する"""
+    def _build_find_all_triplets_action(self):
+        """FindAllTripletsのアクション関数を構築する"""
         async def handler():
             repo = TripletMySQL(self.db)
             presenter = new_find_all_triplets_presenter()
@@ -286,8 +286,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_form_triplets_from_handler(self):
-        """FormTripletsFromのハンドラ関数を構築する"""
+    def _build_form_triplets_from_action(self):
+        """FormTripletsFromのアクション関数を構築する"""
         async def handler(request: FormTripletsFromRequest):
             trs_repo = TrainingReadyScenarioMySQL(self.db)
             triplet_repo = TripletMySQL(self.db)
@@ -309,8 +309,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_process_scenario_handler(self):
-        """ProcessScenarioのハンドラ関数を構築する"""
+    def _build_process_scenario_action(self):
+        """ProcessScenarioのアクション関数を構築する"""
         async def handler(request: ProcessScenarioRequest):
             scenario_repo = ScenarioMySQL(self.db)
             trs_repo = TrainingReadyScenarioMySQL(self.db)
@@ -332,8 +332,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_find_all_processed_scenarios_handler(self):
-        """FindAllProcessedScenariosのハンドラ関数を構築する"""
+    def _build_find_all_processed_scenarios_action(self):
+        """FindAllProcessedScenariosのアクション関数を構築する"""
         async def handler():
             repo = TrainingReadyScenarioMySQL(self.db)
             presenter = new_find_all_processed_scenarios_presenter()
@@ -347,8 +347,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_delete_scenario_handler(self):
-        """DeleteScenarioのハンドラ関数を構築する"""
+    def _build_delete_scenario_action(self):
+        """DeleteScenarioのアクション関数を構築する"""
         async def handler(scenario_id: str):
             repo = ScenarioMySQL(self.db)
             presenter = new_delete_scenario_presenter()
@@ -365,8 +365,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_delete_model_handler(self):
-        """DeleteModelのハンドラ関数を構築する"""
+    def _build_delete_model_action(self):
+        """DeleteModelのアクション関数を構築する"""
         async def handler(model_id: str):
             repo = TrainedModelMySQL(self.db)
             presenter = new_delete_model_presenter()
@@ -382,8 +382,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_delete_triplets_handler(self):
-        """DeleteTripletsのハンドラ関数を構築する"""
+    def _build_delete_triplets_action(self):
+        """DeleteTripletsのアクション関数を構築する"""
         async def handler(triplet_id: str):
             repo = TripletMySQL(self.db)
             presenter = new_delete_triplets_presenter()
@@ -400,8 +400,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_delete_processed_scenario_handler(self):
-        """DeleteProcessedScenarioのハンドラ関数を構築する"""
+    def _build_delete_processed_scenario_action(self):
+        """DeleteProcessedScenarioのアクション関数を構築する"""
         async def handler(scenario_id: str):
             repo = TrainingReadyScenarioMySQL(self.db)
             presenter = new_delete_processed_scenario_presenter()
@@ -418,8 +418,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_compose_new_dataset_handler(self):
-        """ComposeNewDatasetのハンドラ関数を構築する"""
+    def _build_compose_new_dataset_action(self):
+        """ComposeNewDatasetのアクション関数を構築する"""
         async def handler(request: ComposeNewDatasetRequest):
             repo = DatasetMySQL(self.db)
             presenter = new_compose_new_dataset_presenter()
@@ -441,8 +441,8 @@ class FastAPIEngine:
             )
         return handler
 
-    def _build_delete_dataset_handler(self):
-        """DeleteDatasetのハンドラ関数を構築する"""
+    def _build_delete_dataset_action(self):
+        """DeleteDatasetのアクション関数を構築する"""
         async def handler(dataset_id: str):
             repo = DatasetMySQL(self.db)
             presenter = new_delete_dataset_presenter()
