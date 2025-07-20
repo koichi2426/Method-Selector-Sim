@@ -1,6 +1,6 @@
 from typing import List, Optional
 from backend.domain import Scenario, ScenarioRepository, UUID
-from adapter.repository.sql import SQL, Row, Rows
+from backend.adapter.repository.sql import SQL, Row, Rows
 
 
 class ScenarioMySQL(ScenarioRepository):
