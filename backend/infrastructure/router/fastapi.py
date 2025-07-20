@@ -70,8 +70,11 @@ from domain import (
     UUID
 )
 
+from infrastructure.database.mysql_handler import MySQLHandler
+from infrastructure.database.config import NewMySQLConfigFromEnv
+
 router = APIRouter()
-db_handler = SQL()
+db_handler = MySQLHandler(NewMySQLConfigFromEnv())
 ctx_timeout = 10.0
 
 # --- Pydantic models for request validation ---
