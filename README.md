@@ -57,6 +57,4 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
 
 
 ## アーキテクチャ
-<img width="16384" height="14584" alt="image" src="https://github.com/user-attachments/assets/c2f8ecff-9779-4fd3-b1ff-30cb8c9a3f8c" />
-
-
+<img width="16384" height="14584" alt="image" src="https://github.com/user-attachments/assets/d7d3e94f-57bf-4bee-a291-d6fbc11dd25e" />
