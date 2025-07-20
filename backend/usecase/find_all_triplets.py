@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol, List
-from backend.domain import Triplet, TripletRepository, UUID
+from domain import Triplet, TripletRepository, UUID
 
 
 class FindAllTripletsUseCase(Protocol):

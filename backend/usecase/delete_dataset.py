@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol
-from backend.domain import DatasetRepository, UUID
+from domain import DatasetRepository, UUID
 
 
 class DeleteDatasetUseCase(Protocol):

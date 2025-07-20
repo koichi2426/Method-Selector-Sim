@@ -1,5 +1,5 @@
 from typing import List, Optional
-from backend.domain import IndividualEvaluationResult, IndividualEvaluationResultRepository, UUID
+from domain import IndividualEvaluationResult, IndividualEvaluationResultRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows
 
 

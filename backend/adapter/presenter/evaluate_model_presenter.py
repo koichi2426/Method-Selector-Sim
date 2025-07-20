@@ -1,5 +1,5 @@
-from backend.usecase.evaluate_model import EvaluateModelPresenter, EvaluateModelOutput, EvaluationSummaryOutput
-from backend.domain import ModelEvaluationSession, UUID
+from usecase.evaluate_model import EvaluateModelPresenter, EvaluateModelOutput, EvaluationSummaryOutput
+from domain import ModelEvaluationSession, UUID
 
 class EvaluateModelPresenterImpl(EvaluateModelPresenter):
     def output(self, session: ModelEvaluationSession) -> EvaluateModelOutput:

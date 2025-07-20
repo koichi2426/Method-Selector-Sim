@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol, List
-from backend.domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
+from domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
 
 
 class FindAllProcessedScenariosUseCase(Protocol):

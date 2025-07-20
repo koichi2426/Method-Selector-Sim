@@ -1,7 +1,7 @@
 import abc
 from dataclasses import dataclass
 from typing import Protocol
-from backend.domain import TrainedModelRepository, UUID
+from domain import TrainedModelRepository, UUID
 
 
 class DeleteModelUseCase(Protocol):

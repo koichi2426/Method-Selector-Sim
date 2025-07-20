@@ -1,5 +1,5 @@
-from backend.usecase.generate_scenarios import GenerateScenariosPresenter, GenerateScenariosOutput
-from backend.domain import Scenario, UUID
+from usecase.generate_scenarios import GenerateScenariosPresenter, GenerateScenariosOutput
+from domain import Scenario, UUID
 
 class GenerateScenariosPresenterImpl(GenerateScenariosPresenter):
     def output(self, scenario: Scenario) -> GenerateScenariosOutput:

@@ -1,5 +1,5 @@
-from backend.usecase.delete_model import DeleteModelPresenter, DeleteModelOutput
-from backend.domain import UUID
+from usecase.delete_model import DeleteModelPresenter, DeleteModelOutput
+from domain import UUID
 
 class DeleteModelPresenterImpl(DeleteModelPresenter):
     def output(self, deleted_id: UUID) -> DeleteModelOutput:

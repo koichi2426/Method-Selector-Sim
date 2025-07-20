@@ -1,8 +1,8 @@
 import json
 from datetime import datetime
 from typing import List, Optional
-from backend.domain import ModelEvaluationSession, ModelEvaluationSessionRepository, UUID
-from backend.domain.evaluation_summary import EvaluationSummary
+from domain import ModelEvaluationSession, ModelEvaluationSessionRepository, UUID
+from domain.evaluation_summary import EvaluationSummary
 from adapter.repository.sql import SQL, Row, Rows
 
 

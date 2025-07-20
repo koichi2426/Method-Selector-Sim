@@ -4,8 +4,8 @@ from typing import Any, List, Optional
 
 # --- 依存するインターフェースと設定クラスをインポート ---
 # (ご指摘の通り、sqlインターフェースはadapter層から、configはinfrastructure層からインポート)
-from backend.adapter.repository.sql import SQL, Tx, Row, Rows, RowData
-from backend.infrastructure.database.config import MySQLConfig
+from adapter.repository.sql import SQL, Tx, Row, Rows, RowData
+from infrastructure.database.config import MySQLConfig
 
 
 # --- Rows / Row インターフェースのMySQL実装 ---

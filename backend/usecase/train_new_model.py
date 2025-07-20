@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol
 from datetime import datetime
-from backend.domain import Dataset, DatasetRepository, TrainingParameters, NewTrainingParameters, TrainedModel, TrainedModelRepository, ModelTrainerDomainService, UUID
+from domain import Dataset, DatasetRepository, TrainingParameters, NewTrainingParameters, TrainedModel, TrainedModelRepository, ModelTrainerDomainService, UUID
 
 
 class TrainNewModelUseCase(Protocol):
@@ -75,7 +75,7 @@ class TrainNewModelInteractor:
 
         except Exception as e:
             from datetime import datetime
-            from backend.domain import UUID
+            from domain import UUID
             empty_output = TrainNewModelOutput(
                 ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 name="",

@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol
 from datetime import datetime
-from backend.domain import TrainedModel, TrainedModelRepository, Dataset, DatasetRepository, ModelEvaluationSession, ModelEvaluationSessionRepository, EvaluationSummary, PerformanceEvaluatorDomainService, UUID
+from domain import TrainedModel, TrainedModelRepository, Dataset, DatasetRepository, ModelEvaluationSession, ModelEvaluationSessionRepository, EvaluationSummary, PerformanceEvaluatorDomainService, UUID
 
 
 class EvaluateModelUseCase(Protocol):
@@ -79,7 +79,7 @@ class EvaluateModelInteractor:
             return output, None
 
         except Exception as e:
-            from backend.domain import UUID
+            from domain import UUID
             empty_summary = EvaluationSummaryOutput(
                 average_score=0.0,
                 average_inference_time_ms=0.0,
