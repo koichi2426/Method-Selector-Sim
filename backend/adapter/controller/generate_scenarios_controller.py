@@ -1,5 +1,5 @@
 from typing import Dict, Union, List
-from usecase.generate_scenarios import (
+from backend.usecase.generate_scenarios import (
     GenerateScenariosUseCase,
     GenerateScenariosInput,
     GenerateScenariosOutput,

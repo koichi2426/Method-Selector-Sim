@@ -1,6 +1,7 @@
 from typing import Dict, Union, List
-from usecase.find_all_scenario import (
+from backend.usecase.find_all_scenario import (
     FindAllScenarioUseCase,
+    FindAllScenarioInput,
     FindAllScenarioOutput,
 )
 

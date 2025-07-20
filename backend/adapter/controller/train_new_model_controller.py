@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from usecase.train_new_model import (
+from backend.usecase.train_new_model import (
     TrainNewModelUseCase,
     TrainNewModelInput,
     TrainNewModelOutput,

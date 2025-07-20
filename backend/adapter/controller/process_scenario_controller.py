@@ -1,5 +1,5 @@
 from typing import Dict, Union, List
-from usecase.process_scenario import (
+from backend.usecase.process_scenario import (
     ProcessScenarioUseCase,
     ProcessScenarioInput,
     ProcessScenarioOutput,
