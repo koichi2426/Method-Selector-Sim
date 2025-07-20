@@ -21,6 +21,7 @@ from adapter.controller.delete_triplets_controller import DeleteTripletsControll
 from adapter.controller.delete_processed_scenario_controller import DeleteProcessedScenarioController
 from adapter.controller.compose_new_dataset_controller import ComposeNewDatasetController
 from adapter.controller.delete_dataset_controller import DeleteDatasetController
+from adapter.controller.find_all_processed_scenarios_controller import FindAllProcessedScenariosController
 
 # Import usecases
 from usecase.find_all_scenario import FindAllScenarioUseCase, FindAllScenarioOutput, FindAllScenarioPresenter, new_find_all_scenario_interactor
@@ -37,6 +38,7 @@ from usecase.delete_triplets import DeleteTripletsUseCase, DeleteTripletsInput, 
 from usecase.delete_processed_scenario import DeleteProcessedScenarioUseCase, DeleteProcessedScenarioInput, DeleteProcessedScenarioOutput, DeleteProcessedScenarioPresenter, new_delete_processed_scenario_interactor
 from usecase.compose_new_dataset import ComposeNewDatasetUseCase, ComposeNewDatasetInput, ComposeNewDatasetOutput, ComposeNewDatasetPresenter, new_compose_new_dataset_interactor
 from usecase.delete_dataset import DeleteDatasetUseCase, DeleteDatasetInput, DeleteDatasetOutput, DeleteDatasetPresenter, new_delete_dataset_interactor
+from usecase.find_all_processed_scenarios import FindAllProcessedScenariosUseCase, FindAllProcessedScenariosOutput, FindAllProcessedScenariosPresenter, new_find_all_processed_scenarios_interactor
 
 # Import repositories
 from adapter.repository.scenario_mysql import ScenarioMySQL
@@ -44,6 +46,7 @@ from adapter.repository.trained_model_mysql import TrainedModelMySQL
 from adapter.repository.dataset_mysql import DatasetMySQL
 from adapter.repository.triplet_mysql import TripletMySQL
 from adapter.repository.training_ready_scenario_mysql import TrainingReadyScenarioMySQL
+from adapter.repository.model_evaluation_session_mysql import ModelEvaluationSessionMySQL
 
 # Import presenters
 from adapter.presenter.find_all_scenario_presenter import new_find_all_scenario_presenter
@@ -60,6 +63,7 @@ from adapter.presenter.delete_triplets_presenter import new_delete_triplets_pres
 from adapter.presenter.delete_processed_scenario_presenter import new_delete_processed_scenario_presenter
 from adapter.presenter.compose_new_dataset_presenter import new_compose_new_dataset_presenter
 from adapter.presenter.delete_dataset_presenter import new_delete_dataset_presenter
+from adapter.presenter.find_all_processed_scenarios_presenter import new_find_all_processed_scenarios_presenter
 
 # Import domain services
 from backend.domain import (
@@ -93,16 +97,15 @@ class EvaluateModelRequest(BaseModel):
     test_dataset_id: str
 
 class FormTripletsFromRequest(BaseModel):
-    dataset_id: str
-    method_profiles: List[Dict[str, Any]]
+    training_ready_scenario_id: str
 
 class ProcessScenarioRequest(BaseModel):
-    scenario_id: str
+    scenario_ids: List[str]
 
 class ComposeNewDatasetRequest(BaseModel):
     name: str
     description: str
-    scenario_ids: List[str]
+    triplet_ids: List[str]
 
 class DeleteRequest(BaseModel):
     id: str
@@ -140,7 +143,10 @@ class FastAPIEngine:
         self.router.get("/v1/scenarios")(self._build_find_all_scenario_handler())
         self.router.post("/v1/scenarios/generate")(self._build_generate_scenarios_handler())
         self.router.delete("/v1/scenarios/{scenario_id}")(self._build_delete_scenario_handler())
-        self.router.post("/v1/scenarios/{scenario_id}/process")(self._build_process_scenario_handler())
+        self.router.post("/v1/scenarios/process")(self._build_process_scenario_handler())
+        
+        # Processed scenarios endpoints
+        self.router.get("/v1/processed-scenarios")(self._build_find_all_processed_scenarios_handler())
         self.router.delete("/v1/processed-scenarios/{scenario_id}")(self._build_delete_processed_scenario_handler())
 
         # Model endpoints
@@ -228,9 +234,26 @@ class FastAPIEngine:
     def _build_evaluate_model_handler(self):
         """EvaluateModelのハンドラ関数を構築する"""
         async def handler(request: EvaluateModelRequest):
-            # Implementation would be similar to train_new_model
-            # This is a placeholder - you'd need to implement the actual usecase
-            return JSONResponse(content={"message": "Not implemented yet"}, status_code=501)
+            model_repo = TrainedModelMySQL(self.db)
+            dataset_repo = DatasetMySQL(self.db)
+            session_repo = ModelEvaluationSessionMySQL(self.db)
+            presenter = new_evaluate_model_presenter()
+            domain_service = PerformanceEvaluatorDomainService()  # This would need proper initialization
+            usecase = new_evaluate_model_interactor(model_repo, dataset_repo, session_repo, presenter, domain_service, self.ctx_timeout)
+            controller = EvaluateModelController(usecase)
+            
+            # Convert string UUID to domain UUID
+            from backend.domain import UUID
+            input_data = EvaluateModelInput(
+                model_id=UUID(value=request.model_id),
+                dataset_id=UUID(value=request.test_dataset_id),
+            )
+            
+            response_dict = controller.execute(input_data)
+            return JSONResponse(
+                content=response_dict.get("data"),
+                status_code=response_dict.get("status", 500)
+            )
         return handler
 
     def _build_find_all_models_handler(self):
@@ -266,17 +289,62 @@ class FastAPIEngine:
     def _build_form_triplets_from_handler(self):
         """FormTripletsFromのハンドラ関数を構築する"""
         async def handler(request: FormTripletsFromRequest):
-            # Implementation would be similar to generate_scenarios
-            # This is a placeholder - you'd need to implement the actual usecase
-            return JSONResponse(content={"message": "Not implemented yet"}, status_code=501)
+            trs_repo = TrainingReadyScenarioMySQL(self.db)
+            triplet_repo = TripletMySQL(self.db)
+            presenter = new_form_triplets_from_presenter()
+            domain_service = TripletFormerDomainService()  # This would need proper initialization
+            usecase = new_form_triplets_from_interactor(trs_repo, triplet_repo, presenter, domain_service, self.ctx_timeout)
+            controller = FormTripletsFromController(usecase)
+            
+            # Convert string UUID to domain UUID
+            from backend.domain import UUID
+            input_data = FormTripletsFromInput(
+                training_ready_scenario_id=UUID(value=request.training_ready_scenario_id),
+            )
+            
+            response_dict = controller.execute(input_data)
+            return JSONResponse(
+                content=response_dict.get("data"),
+                status_code=response_dict.get("status", 500)
+            )
         return handler
 
     def _build_process_scenario_handler(self):
         """ProcessScenarioのハンドラ関数を構築する"""
-        async def handler(scenario_id: str):
-            # Implementation would be similar to other handlers
-            # This is a placeholder - you'd need to implement the actual usecase
-            return JSONResponse(content={"message": "Not implemented yet"}, status_code=501)
+        async def handler(request: ProcessScenarioRequest):
+            scenario_repo = ScenarioMySQL(self.db)
+            trs_repo = TrainingReadyScenarioMySQL(self.db)
+            presenter = new_process_scenario_presenter()
+            domain_service = PreprocessorDomainService()  # This would need proper initialization
+            usecase = new_process_scenario_interactor(scenario_repo, trs_repo, presenter, domain_service, self.ctx_timeout)
+            controller = ProcessScenarioController(usecase)
+            
+            # Convert string UUIDs to domain UUIDs
+            from backend.domain import UUID
+            input_data = ProcessScenarioInput(
+                scenario_ids=[UUID(value=scenario_id) for scenario_id in request.scenario_ids],
+            )
+            
+            response_dict = controller.execute(input_data)
+            return JSONResponse(
+                content=response_dict.get("data"),
+                status_code=response_dict.get("status", 500)
+            )
+        return handler
+
+    def _build_find_all_processed_scenarios_handler(self):
+        """FindAllProcessedScenariosのハンドラ関数を構築する"""
+        async def handler():
+            repo = TrainingReadyScenarioMySQL(self.db)
+            presenter = new_find_all_processed_scenarios_presenter()
+            usecase = new_find_all_processed_scenarios_interactor(presenter, repo, self.ctx_timeout)
+            controller = FindAllProcessedScenariosController(usecase)
+            
+            response_dict = controller.execute()
+            return JSONResponse(
+                content=response_dict.get("data"),
+                status_code=response_dict.get("status", 500)
+            )
         return handler
 
     def _build_delete_scenario_handler(self):
@@ -353,9 +421,24 @@ class FastAPIEngine:
     def _build_compose_new_dataset_handler(self):
         """ComposeNewDatasetのハンドラ関数を構築する"""
         async def handler(request: ComposeNewDatasetRequest):
-            # Implementation would be similar to other handlers
-            # This is a placeholder - you'd need to implement the actual usecase
-            return JSONResponse(content={"message": "Not implemented yet"}, status_code=501)
+            repo = DatasetMySQL(self.db)
+            presenter = new_compose_new_dataset_presenter()
+            usecase = new_compose_new_dataset_interactor(repo, presenter, self.ctx_timeout)
+            controller = ComposeNewDatasetController(usecase)
+            
+            # Convert string UUIDs to domain UUIDs
+            from backend.domain import UUID
+            input_data = ComposeNewDatasetInput(
+                name=request.name,
+                description=request.description,
+                triplet_ids=[UUID(value=triplet_id) for triplet_id in request.triplet_ids],
+            )
+            
+            response_dict = controller.execute(input_data)
+            return JSONResponse(
+                content=response_dict.get("data"),
+                status_code=response_dict.get("status", 500)
+            )
         return handler
 
     def _build_delete_dataset_handler(self):
