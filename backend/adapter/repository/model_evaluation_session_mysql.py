@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from backend.domain import ModelEvaluationSession, ModelEvaluationSessionRepository, UUID
 from backend.domain.evaluation_summary import EvaluationSummary
-from backend.adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows
 
 
 class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):

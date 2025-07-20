@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from backend.domain import TrainedModel, TrainedModelRepository, UUID
-from backend.adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows
 
 
 class TrainedModelMySQL(TrainedModelRepository):

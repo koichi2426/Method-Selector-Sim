@@ -1,6 +1,6 @@
 from typing import List, Optional
 from backend.domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
-from backend.adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows
 
 
 class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):

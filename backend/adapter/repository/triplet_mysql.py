@@ -1,6 +1,6 @@
 from typing import List, Optional
 from backend.domain import Triplet, TripletRepository, UUID
-from backend.adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows
 
 
 class TripletMySQL(TripletRepository):

@@ -1,7 +1,8 @@
 from typing import Dict, Union, List
 from backend.usecase.find_all_triplets import (
-    FindAllTripletsOutput,
     FindAllTripletsUseCase,
+    FindAllTripletsInput,
+    FindAllTripletsOutput,
 )
 
 
