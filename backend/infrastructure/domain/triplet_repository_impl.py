@@ -1,4 +1,4 @@
-from backend.domain.triplet import TripletRepository
+from domain.triplet import TripletRepository
 
 class TripletRepositoryImpl(TripletRepository):
     pass 

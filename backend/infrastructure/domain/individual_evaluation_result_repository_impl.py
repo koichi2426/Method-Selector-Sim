@@ -1,4 +1,4 @@
-from backend.domain.individual_evaluation_result import IndividualEvaluationResultRepository
+from domain.individual_evaluation_result import IndividualEvaluationResultRepository
 
 class IndividualEvaluationResultRepositoryImpl(IndividualEvaluationResultRepository):
     pass 

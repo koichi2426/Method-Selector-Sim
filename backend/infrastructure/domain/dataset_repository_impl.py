@@ -1,4 +1,4 @@
-from backend.domain.dataset import DatasetRepository
+from domain.dataset import DatasetRepository
 
 class DatasetRepositoryImpl(DatasetRepository):
     pass 

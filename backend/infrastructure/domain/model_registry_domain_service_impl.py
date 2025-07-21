@@ -1,4 +1,4 @@
-from backend.domain.model_registry_domain_service import ModelRegistryDomainService
+from domain.model_registry_domain_service import ModelRegistryDomainService
 
 class ModelRegistryDomainServiceImpl(ModelRegistryDomainService):
     pass 

@@ -1,4 +1,4 @@
-from backend.domain.training_ready_scenario import TrainingReadyScenarioRepository
+from domain.training_ready_scenario import TrainingReadyScenarioRepository
 
 class TrainingReadyScenarioRepositoryImpl(TrainingReadyScenarioRepository):
     pass 
