@@ -1,0 +1,4 @@
+from backend.domain.scenario_generator_domain_service import ScenarioGeneratorDomainService
+
+class ScenarioGeneratorDomainServiceImpl(ScenarioGeneratorDomainService):
+    pass 

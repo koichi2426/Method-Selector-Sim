@@ -1,0 +1,4 @@
+from backend.domain.triplet_data_store_domain_service import TripletDataStoreDomainService
+
+class TripletDataStoreDomainServiceImpl(TripletDataStoreDomainService):
+    pass 

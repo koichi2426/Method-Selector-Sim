@@ -1,0 +1,4 @@
+from backend.domain.performance_evaluator_domain_service import PerformanceEvaluatorDomainService
+
+class PerformanceEvaluatorDomainServiceImpl(PerformanceEvaluatorDomainService):
+    pass 
