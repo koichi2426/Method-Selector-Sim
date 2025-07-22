@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..'
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from infrastructure.database.models import Base
+from backend.infrastructure.database.models import Base
 target_metadata = Base.metadata
 
 # --- ここまで編集 ---
@@ -79,7 +79,7 @@ def run_migrations_online() -> None:
     # --- ここまで編集 ---
 
     connectable = engine_from_config(
-        config.get_section(config.config_main_section, {}), # config.config_ini_section は古いので修正
+        config.get_section(config.config_ini_section, {}), # <-- 修正箇所
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
