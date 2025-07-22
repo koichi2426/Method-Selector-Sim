@@ -2,7 +2,8 @@ import random
 from typing import List
 
 from domain.log_generation_config import LogGenerationConfig
-from domain.scenario import Scenario, NewScenario, NewUUID
+from domain.scenario import Scenario, NewScenario
+from domain.custom_uuid import NewUUID  # 修正: 正しいファイルからインポート
 from domain.scenario_generator_domain_service import ScenarioGeneratorDomainService
 
 class ScenarioGeneratorDomainServiceImpl(ScenarioGeneratorDomainService):
@@ -15,7 +16,7 @@ class ScenarioGeneratorDomainServiceImpl(ScenarioGeneratorDomainService):
         この実装では、あらかじめ用意された固定のモックシナリオを返す。
         """
         
-        # モックとして用意したシナリオのリスト (英語に修正)
+        # モックとして用意したシナリオのリスト (英語)
         mock_scenarios = [
             NewScenario(
                 ID=NewUUID(),
