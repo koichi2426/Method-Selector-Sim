@@ -19,12 +19,12 @@ if config.config_file_name is not None:
 
 # --- ここから編集 ---
 
-# backendディレクトリをPythonのパスに追加
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
+# 修正点: このファイルの親ディレクトリ（コンテナ内の/app）をパスに追加
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from backend.infrastructure.database.models import Base
+from infrastructure.database.models import Base
 target_metadata = Base.metadata
 
 # --- ここまで編集 ---
@@ -79,7 +79,7 @@ def run_migrations_online() -> None:
     # --- ここまで編集 ---
 
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}), # <-- 修正箇所
+        config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
