@@ -111,8 +111,10 @@ def get_all_scenarios():
     presenter = new_find_all_scenario_presenter()
     usecase = new_find_all_scenario_interactor(presenter, repo, ctx_timeout)
     controller = FindAllScenarioController(usecase)
-    response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute()
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.post("/v1/scenarios/generate")
 def generate_scenarios(request: GenerateScenariosRequest):
@@ -126,8 +128,10 @@ def generate_scenarios(request: GenerateScenariosRequest):
         method_pool=request.method_pool,
         situations=request.situations,
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute(input_data)
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.delete("/v1/scenarios/{scenario_id}")
 def delete_scenario(scenario_id: str):
@@ -136,8 +140,9 @@ def delete_scenario(scenario_id: str):
     usecase = new_delete_scenario_interactor(repo, presenter, ctx_timeout)
     controller = DeleteScenarioController(usecase)
     input_data = DeleteScenarioInput(id=UUID(value=scenario_id))
-    response_dict = controller.execute(input_data)
+    response_dict, _ = controller.execute(input_data)
     return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+
 
 @router.post("/v1/scenarios/process")
 def process_scenario(request: ProcessScenarioRequest):
@@ -150,8 +155,11 @@ def process_scenario(request: ProcessScenarioRequest):
     input_data = ProcessScenarioInput(
         scenario_ids=[UUID(value=sid) for sid in request.scenario_ids],
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute(input_data)
+    output_object = response_dict.get("data")
+    content_data = output_object.model_dump(mode='json') if output_object else None
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
+
 
 # --- Processed scenarios endpoints ---
 @router.get("/v1/processed-scenarios")
@@ -160,8 +168,10 @@ def get_all_processed_scenarios():
     presenter = new_find_all_processed_scenarios_presenter()
     usecase = new_find_all_processed_scenarios_interactor(presenter, repo, ctx_timeout)
     controller = FindAllProcessedScenariosController(usecase)
-    response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute()
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.delete("/v1/processed-scenarios/{scenario_id}")
 def delete_processed_scenario(scenario_id: str):
@@ -170,7 +180,7 @@ def delete_processed_scenario(scenario_id: str):
     usecase = new_delete_processed_scenario_interactor(repo, presenter, ctx_timeout)
     controller = DeleteProcessedScenarioController(usecase)
     input_data = DeleteProcessedScenarioInput(id=UUID(value=scenario_id))
-    response_dict = controller.execute(input_data)
+    response_dict, _ = controller.execute(input_data)
     return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
 
 # --- Model endpoints ---
@@ -180,8 +190,10 @@ def get_all_models():
     presenter = new_find_all_models_presenter()
     usecase = new_find_all_models_interactor(presenter, repo, ctx_timeout)
     controller = FindAllModelsController(usecase)
-    response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute()
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.post("/v1/models/train")
 def train_new_model(request: TrainNewModelRequest):
@@ -197,8 +209,10 @@ def train_new_model(request: TrainNewModelRequest):
         batch_size=request.batch_size,
         learning_rate=request.learning_rate,
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute(input_data)
+    output_object = response_dict.get("data")
+    content_data = output_object.model_dump(mode='json') if output_object else None
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.post("/v1/models/evaluate")
 def evaluate_model(request: EvaluateModelRequest):
@@ -213,8 +227,10 @@ def evaluate_model(request: EvaluateModelRequest):
         model_id=UUID(value=request.model_id),
         dataset_id=UUID(value=request.test_dataset_id),
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute(input_data)
+    output_object = response_dict.get("data")
+    content_data = output_object.model_dump(mode='json') if output_object else None
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.delete("/v1/models/{model_id}")
 def delete_model(model_id: str):
@@ -223,7 +239,7 @@ def delete_model(model_id: str):
     usecase = new_delete_model_interactor(repo, presenter, ctx_timeout)
     controller = DeleteModelController(usecase)
     input_data = DeleteModelInput(id=UUID(value=model_id))
-    response_dict = controller.execute(input_data)
+    response_dict, _ = controller.execute(input_data)
     return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
 
 # --- Dataset endpoints ---
@@ -238,8 +254,16 @@ def compose_new_dataset(request: ComposeNewDatasetRequest):
         description=request.description,
         triplet_ids=[UUID(value=tid) for tid in request.triplet_ids],
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, err = controller.execute(input_data)
+    
+    # Controllerから返されたPydanticオブジェクトを取得
+    output_object = response_dict.get("data")
+    
+    # .model_dump() を使ってオブジェクトをJSON互換の辞書に変換
+    content_data = output_object.model_dump(mode='json') if output_object else None
+    
+    # 辞書に変換したデータをcontentに渡す
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.delete("/v1/datasets/{dataset_id}")
 def delete_dataset(dataset_id: str):
@@ -248,7 +272,7 @@ def delete_dataset(dataset_id: str):
     usecase = new_delete_dataset_interactor(repo, presenter, ctx_timeout)
     controller = DeleteDatasetController(usecase)
     input_data = DeleteDatasetInput(id=UUID(value=dataset_id))
-    response_dict = controller.execute(input_data)
+    response_dict, _ = controller.execute(input_data)
     return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
 
 # --- Triplet endpoints ---
@@ -258,8 +282,10 @@ def get_all_triplets():
     presenter = new_find_all_triplets_presenter()
     usecase = new_find_all_triplets_interactor(presenter, repo, ctx_timeout)
     controller = FindAllTripletsController(usecase)
-    response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute()
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.post("/v1/triplets/form")
 def form_triplets_from(request: FormTripletsFromRequest):
@@ -272,8 +298,10 @@ def form_triplets_from(request: FormTripletsFromRequest):
     input_data = FormTripletsFromInput(
         training_ready_scenario_id=UUID(value=request.training_ready_scenario_id),
     )
-    response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    response_dict, _ = controller.execute(input_data)
+    output_object = response_dict.get("data")
+    content_data = [obj.model_dump(mode='json') for obj in output_object] if isinstance(output_object, list) else (output_object.model_dump(mode='json') if output_object else None)
+    return JSONResponse(content=content_data, status_code=response_dict.get("status", 500))
 
 @router.delete("/v1/triplets/{triplet_id}")
 def delete_triplets(triplet_id: str):
@@ -282,8 +310,9 @@ def delete_triplets(triplet_id: str):
     usecase = new_delete_triplets_interactor(repo, presenter, ctx_timeout)
     controller = DeleteTripletsController(usecase)
     input_data = DeleteTripletsInput(id=UUID(value=triplet_id))
-    response_dict = controller.execute(input_data)
+    response_dict, _ = controller.execute(input_data)
     return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+
 
 # --- Health check ---
 @router.get("/v1/health")
