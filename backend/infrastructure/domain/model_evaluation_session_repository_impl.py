@@ -1,4 +1,0 @@
-from domain.model_evaluation_session import ModelEvaluationSessionRepository
-
-class ModelEvaluationSessionRepositoryImpl(ModelEvaluationSessionRepository):
-    pass 
