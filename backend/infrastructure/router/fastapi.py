@@ -165,7 +165,7 @@ def generate_scenarios(request: GenerateScenariosRequest):
 def delete_scenario(scenario_id: str):
     repo = ScenarioMySQL(db_handler)
     presenter = new_delete_scenario_presenter()
-    usecase = new_delete_scenario_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_scenario_interactor(presenter, repo, ctx_timeout)
     controller = DeleteScenarioController(usecase)
     input_data = DeleteScenarioInput(scenario_id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
