@@ -1,7 +1,9 @@
+import json
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List
+from dataclasses import is_dataclass
 
 # --- Controller, Presenter, Repository, Usecase imports ---
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -104,7 +106,7 @@ class ComposeNewDatasetRequest(BaseModel):
     description: str
     triplet_ids: List[str]
 
-# --- Helper function for response handling ---
+# --- Helper function for response handling (修正箇所) ---
 def handle_response(response_dict: Dict, success_code: int = 200):
     status_code = response_dict.get("status", 500)
     data = response_dict.get("data")
@@ -112,14 +114,18 @@ def handle_response(response_dict: Dict, success_code: int = 200):
     if status_code >= 400:
         return JSONResponse(content=data, status_code=status_code)
 
-    if isinstance(data, list):
-        content_data = [obj.model_dump(mode='json') for obj in data]
-    elif hasattr(data, 'model_dump'):
-        content_data = data.model_dump(mode='json')
-    else:
-        content_data = data
+    try:
+        # json.dumpsにdefault=strを渡すことで、dataclassやUUID、datetimeなどを
+        # 自動的に文字列に変換してJSON文字列を生成する。
+        # その後、json.loadsでJSONシリアライズ可能な辞書/リストに戻す。
+        content_str = json.dumps(data, default=str)
+        content_data = json.loads(content_str)
+    except TypeError:
+        # 万が一、それでもシリアライズできないオブジェクトがあった場合のエラーハンドリング
+        content_data = {"error": "Failed to serialize response data"}
+        status_code = 500
 
-    return JSONResponse(content=content_data, status_code=success_code)
+    return JSONResponse(content=content_data, status_code=success_code if status_code < 400 else status_code)
 
 
 # --- Scenario endpoints ---
