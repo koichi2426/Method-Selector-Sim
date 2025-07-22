@@ -1,3 +1,6 @@
 fastapi
 uvicorn[standard]
 mysql-connector-python
+sqlalchemy
+alembic
+python-dotenv

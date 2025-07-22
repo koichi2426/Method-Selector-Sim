@@ -1,0 +1,4 @@
+from domain.processed_data_store_domain_service import ProcessedDataStoreDomainService
+
+class ProcessedDataStoreDomainServiceImpl(ProcessedDataStoreDomainService):
+    pass 

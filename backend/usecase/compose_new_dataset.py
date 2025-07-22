@@ -56,7 +56,7 @@ class ComposeNewDatasetInteractor:
                 description=input_data.description,
                 type="training",
                 Triplet_ids=input_data.triplet_ids,
-                created_at=datetime.now().isoformat(),
+                created_at=datetime.now(), # <-- 修正箇所
             )
 
             created_dataset = self.dataset_repo.create(dataset)

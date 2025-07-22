@@ -13,12 +13,13 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
         self.db = db
 
     def create(self, result: IndividualEvaluationResult) -> IndividualEvaluationResult:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO individual_evaluation_results (
                 id, model_evaluation_session_id, test_data_id, 
                 inference_time_ms, power_consumption_mw, 
                 llm_judge_score, llm_judge_reasoning
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -37,7 +38,8 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             raise RuntimeError(f"error creating individual evaluation result: {e}")
 
     def find_by_id(self, result_id: UUID) -> Optional[IndividualEvaluationResult]:
-        query = "SELECT * FROM individual_evaluation_results WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM individual_evaluation_results WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, result_id.value)
             return self._scan_row(row)
@@ -49,7 +51,8 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
     def find_by_session_id(
         self, session_id: UUID
     ) -> List[IndividualEvaluationResult]:
-        query = "SELECT * FROM individual_evaluation_results WHERE model_evaluation_session_id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM individual_evaluation_results WHERE model_evaluation_session_id = %s"
         results = []
         try:
             rows = self.db.query(query, session_id.value)
@@ -64,15 +67,16 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             )
 
     def update(self, result: IndividualEvaluationResult) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE individual_evaluation_results SET
-                model_evaluation_session_id = ?,
-                test_data_id = ?,
-                inference_time_ms = ?,
-                power_consumption_mw = ?,
-                llm_judge_score = ?,
-                llm_judge_reasoning = ?
-            WHERE id = ?
+                model_evaluation_session_id = %s,
+                test_data_id = %s,
+                inference_time_ms = %s,
+                power_consumption_mw = %s,
+                llm_judge_score = %s,
+                llm_judge_reasoning = %s
+            WHERE id = %s
         """
         try:
             self.db.execute(
@@ -89,7 +93,8 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             raise RuntimeError(f"error updating individual evaluation result: {e}")
 
     def delete(self, result_id: UUID) -> None:
-        query = "DELETE FROM individual_evaluation_results WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM individual_evaluation_results WHERE id = %s"
         try:
             self.db.execute(query, result_id.value)
         except Exception as e:

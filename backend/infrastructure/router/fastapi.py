@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+import json
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List
+from dataclasses import is_dataclass
+from fastapi.responses import Response # このインポートを追加
 
 # --- Controller, Presenter, Repository, Usecase imports ---
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -104,6 +107,34 @@ class ComposeNewDatasetRequest(BaseModel):
     description: str
     triplet_ids: List[str]
 
+# --- Helper function for response handling (修正箇所) ---
+def handle_response(response_dict: Dict, success_code: int = 200):
+    status_code = response_dict.get("status", 500)
+    data = response_dict.get("data")
+
+    if status_code >= 400:
+        return JSONResponse(content=data, status_code=status_code)
+
+    # --- ここから修正 ---
+    # 成功コードが204の場合、中身が空のレスポンスを返す
+    if success_code == 204:
+        return Response(status_code=204)
+    # --- ここまで修正 ---
+
+    try:
+        # json.dumpsにdefault=strを渡すことで、dataclassやUUID、datetimeなどを
+        # 自動的に文字列に変換してJSON文字列を生成する。
+        # その後、json.loadsでJSONシリアライズ可能な辞書/リストに戻す。
+        content_str = json.dumps(data, default=str)
+        content_data = json.loads(content_str)
+    except TypeError:
+        # 万が一、それでもシリアライズできないオブジェクトがあった場合のエラーハンドリング
+        content_data = {"error": "Failed to serialize response data"}
+        status_code = 500
+
+    return JSONResponse(content=content_data, status_code=success_code if status_code < 400 else status_code)
+
+
 # --- Scenario endpoints ---
 @router.get("/v1/scenarios")
 def get_all_scenarios():
@@ -112,7 +143,7 @@ def get_all_scenarios():
     usecase = new_find_all_scenario_interactor(presenter, repo, ctx_timeout)
     controller = FindAllScenarioController(usecase)
     response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict)
 
 @router.post("/v1/scenarios/generate")
 def generate_scenarios(request: GenerateScenariosRequest):
@@ -127,7 +158,7 @@ def generate_scenarios(request: GenerateScenariosRequest):
         situations=request.situations,
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 @router.delete("/v1/scenarios/{scenario_id}")
 def delete_scenario(scenario_id: str):
@@ -137,7 +168,7 @@ def delete_scenario(scenario_id: str):
     controller = DeleteScenarioController(usecase)
     input_data = DeleteScenarioInput(id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=204)
 
 @router.post("/v1/scenarios/process")
 def process_scenario(request: ProcessScenarioRequest):
@@ -151,7 +182,7 @@ def process_scenario(request: ProcessScenarioRequest):
         scenario_ids=[UUID(value=sid) for sid in request.scenario_ids],
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 # --- Processed scenarios endpoints ---
 @router.get("/v1/processed-scenarios")
@@ -161,7 +192,7 @@ def get_all_processed_scenarios():
     usecase = new_find_all_processed_scenarios_interactor(presenter, repo, ctx_timeout)
     controller = FindAllProcessedScenariosController(usecase)
     response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict)
 
 @router.delete("/v1/processed-scenarios/{scenario_id}")
 def delete_processed_scenario(scenario_id: str):
@@ -171,7 +202,7 @@ def delete_processed_scenario(scenario_id: str):
     controller = DeleteProcessedScenarioController(usecase)
     input_data = DeleteProcessedScenarioInput(id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=204)
 
 # --- Model endpoints ---
 @router.get("/v1/models")
@@ -181,7 +212,7 @@ def get_all_models():
     usecase = new_find_all_models_interactor(presenter, repo, ctx_timeout)
     controller = FindAllModelsController(usecase)
     response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict)
 
 @router.post("/v1/models/train")
 def train_new_model(request: TrainNewModelRequest):
@@ -198,7 +229,7 @@ def train_new_model(request: TrainNewModelRequest):
         learning_rate=request.learning_rate,
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 @router.post("/v1/models/evaluate")
 def evaluate_model(request: EvaluateModelRequest):
@@ -214,7 +245,7 @@ def evaluate_model(request: EvaluateModelRequest):
         dataset_id=UUID(value=request.test_dataset_id),
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 @router.delete("/v1/models/{model_id}")
 def delete_model(model_id: str):
@@ -224,7 +255,7 @@ def delete_model(model_id: str):
     controller = DeleteModelController(usecase)
     input_data = DeleteModelInput(id=UUID(value=model_id))
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=204)
 
 # --- Dataset endpoints ---
 @router.post("/v1/datasets")
@@ -239,17 +270,17 @@ def compose_new_dataset(request: ComposeNewDatasetRequest):
         triplet_ids=[UUID(value=tid) for tid in request.triplet_ids],
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 @router.delete("/v1/datasets/{dataset_id}")
 def delete_dataset(dataset_id: str):
     repo = DatasetMySQL(db_handler)
     presenter = new_delete_dataset_presenter()
-    usecase = new_delete_dataset_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_dataset_interactor(presenter, repo, ctx_timeout)
     controller = DeleteDatasetController(usecase)
-    input_data = DeleteDatasetInput(id=UUID(value=dataset_id))
+    input_data = DeleteDatasetInput(dataset_id=UUID(value=dataset_id))
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=204)
 
 # --- Triplet endpoints ---
 @router.get("/v1/triplets")
@@ -259,7 +290,7 @@ def get_all_triplets():
     usecase = new_find_all_triplets_interactor(presenter, repo, ctx_timeout)
     controller = FindAllTripletsController(usecase)
     response_dict = controller.execute()
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict)
 
 @router.post("/v1/triplets/form")
 def form_triplets_from(request: FormTripletsFromRequest):
@@ -273,7 +304,7 @@ def form_triplets_from(request: FormTripletsFromRequest):
         training_ready_scenario_id=UUID(value=request.training_ready_scenario_id),
     )
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=201)
 
 @router.delete("/v1/triplets/{triplet_id}")
 def delete_triplets(triplet_id: str):
@@ -283,7 +314,7 @@ def delete_triplets(triplet_id: str):
     controller = DeleteTripletsController(usecase)
     input_data = DeleteTripletsInput(id=UUID(value=triplet_id))
     response_dict = controller.execute(input_data)
-    return JSONResponse(content=response_dict.get("data"), status_code=response_dict.get("status", 500))
+    return handle_response(response_dict, success_code=204)
 
 # --- Health check ---
 @router.get("/v1/health")
