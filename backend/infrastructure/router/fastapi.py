@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List
 from dataclasses import is_dataclass
+from fastapi.responses import Response # このインポートを追加
 
 # --- Controller, Presenter, Repository, Usecase imports ---
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -113,6 +114,12 @@ def handle_response(response_dict: Dict, success_code: int = 200):
 
     if status_code >= 400:
         return JSONResponse(content=data, status_code=status_code)
+
+    # --- ここから修正 ---
+    # 成功コードが204の場合、中身が空のレスポンスを返す
+    if success_code == 204:
+        return Response(status_code=204)
+    # --- ここまで修正 ---
 
     try:
         # json.dumpsにdefault=strを渡すことで、dataclassやUUID、datetimeなどを
@@ -269,9 +276,9 @@ def compose_new_dataset(request: ComposeNewDatasetRequest):
 def delete_dataset(dataset_id: str):
     repo = DatasetMySQL(db_handler)
     presenter = new_delete_dataset_presenter()
-    usecase = new_delete_dataset_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_dataset_interactor(presenter, repo, ctx_timeout)
     controller = DeleteDatasetController(usecase)
-    input_data = DeleteDatasetInput(id=UUID(value=dataset_id))
+    input_data = DeleteDatasetInput(dataset_id=UUID(value=dataset_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
