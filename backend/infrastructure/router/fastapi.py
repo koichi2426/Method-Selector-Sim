@@ -64,14 +64,15 @@ from usecase.delete_dataset import DeleteDatasetInput, new_delete_dataset_intera
 from usecase.find_all_processed_scenarios import new_find_all_processed_scenarios_interactor
 
 # --- Domain services ---
-from domain import (
-    ScenarioGeneratorDomainService,
-    ModelTrainerDomainService,
-    PerformanceEvaluatorDomainService,
-    TripletFormerDomainService,
-    PreprocessorDomainService,
-    UUID
-)
+from domain import UUID
+
+# --- Domain service implementations (修正箇所) ---
+from infrastructure.domain.scenario_generator_domain_service_impl import ScenarioGeneratorDomainServiceImpl
+from infrastructure.domain.model_trainer_domain_service_impl import ModelTrainerDomainServiceImpl
+from infrastructure.domain.performance_evaluator_domain_service_impl import PerformanceEvaluatorDomainServiceImpl
+from infrastructure.domain.triplet_former_domain_service_impl import TripletFormerDomainServiceImpl
+from infrastructure.domain.preprocessor_domain_service_impl import PreprocessorDomainServiceImpl
+
 
 from infrastructure.database.mysql_handler import MySQLHandler
 from infrastructure.database.config import NewMySQLConfigFromEnv
@@ -149,7 +150,7 @@ def get_all_scenarios():
 def generate_scenarios(request: GenerateScenariosRequest):
     repo = ScenarioMySQL(db_handler)
     presenter = new_generate_scenarios_presenter()
-    domain_service = ScenarioGeneratorDomainService()
+    domain_service = ScenarioGeneratorDomainServiceImpl() # 修正
     usecase = new_generate_scenarios_interactor(repo, presenter, domain_service, ctx_timeout)
     controller = GenerateScenariosController(usecase)
     input_data = GenerateScenariosInput(
@@ -175,7 +176,7 @@ def process_scenario(request: ProcessScenarioRequest):
     scenario_repo = ScenarioMySQL(db_handler)
     trs_repo = TrainingReadyScenarioMySQL(db_handler)
     presenter = new_process_scenario_presenter()
-    domain_service = PreprocessorDomainService()
+    domain_service = PreprocessorDomainServiceImpl() # 修正
     usecase = new_process_scenario_interactor(scenario_repo, trs_repo, presenter, domain_service, ctx_timeout)
     controller = ProcessScenarioController(usecase)
     input_data = ProcessScenarioInput(
@@ -219,7 +220,7 @@ def train_new_model(request: TrainNewModelRequest):
     dataset_repo = DatasetMySQL(db_handler)
     trained_model_repo = TrainedModelMySQL(db_handler)
     presenter = new_train_new_model_presenter()
-    domain_service = ModelTrainerDomainService()
+    domain_service = ModelTrainerDomainServiceImpl() # 修正
     usecase = new_train_new_model_interactor(dataset_repo, trained_model_repo, presenter, domain_service, ctx_timeout)
     controller = TrainNewModelController(usecase)
     input_data = TrainNewModelInput(
@@ -237,7 +238,7 @@ def evaluate_model(request: EvaluateModelRequest):
     dataset_repo = DatasetMySQL(db_handler)
     session_repo = ModelEvaluationSessionMySQL(db_handler)
     presenter = new_evaluate_model_presenter()
-    domain_service = PerformanceEvaluatorDomainService()
+    domain_service = PerformanceEvaluatorDomainServiceImpl() # 修正
     usecase = new_evaluate_model_interactor(model_repo, dataset_repo, session_repo, presenter, domain_service, ctx_timeout)
     controller = EvaluateModelController(usecase)
     input_data = EvaluateModelInput(
@@ -297,7 +298,7 @@ def form_triplets_from(request: FormTripletsFromRequest):
     trs_repo = TrainingReadyScenarioMySQL(db_handler)
     triplet_repo = TripletMySQL(db_handler)
     presenter = new_form_triplets_from_presenter()
-    domain_service = TripletFormerDomainService()
+    domain_service = TripletFormerDomainServiceImpl() # 修正
     usecase = new_form_triplets_from_interactor(trs_repo, triplet_repo, presenter, domain_service, ctx_timeout)
     controller = FormTripletsFromController(usecase)
     input_data = FormTripletsFromInput(
