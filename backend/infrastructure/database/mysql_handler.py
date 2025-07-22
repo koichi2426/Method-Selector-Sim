@@ -3,7 +3,6 @@ from mysql.connector import pooling
 from typing import Any, List, Optional
 
 # --- 依存するインターフェースと設定クラスをインポート ---
-# (ご指摘の通り、sqlインターフェースはadapter層から、configはinfrastructure層からインポート)
 from adapter.repository.sql import SQL, Tx, Row, Rows, RowData
 from infrastructure.database.config import MySQLConfig
 
@@ -23,56 +22,35 @@ class MySQLRow(Row):
         Pythonではこのパターンは稀で、直接タプルとして受け取るのが一般的。
         """
         if self._row_data is None:
-            # Goのsql.ErrNoRowsに相当するエラー
             raise ValueError("行が見つかりません")
         
         if len(dest) != len(self._row_data):
             raise ValueError(f"引数の数({len(dest)})とカラムの数({len(self._row_data)})が一致しません")
 
         # この実装はGoのScanを模倣するためのもので、実際にはあまり使われない
-        for i, val in enumerate(self._row_data):
-            # 概念的な実装
-            print(f"警告: scan()は概念的な実装です。dest[{i}]に{val}をセットしようとしました。")
+        print(f"警告: scan()は概念的な実装です。")
+
+    # データを直接取得するためのメソッドを追加
+    def get_values(self) -> Optional[RowData]:
+        return self._row_data
 
 
 class MySQLRows(Rows):
     """
-    複数の結果行（カーソル）をラップするクラス。
+    複数の結果行（データのリスト）をラップするクラス。
     """
-    def __init__(self, cursor):
-        self._cursor = cursor
-        self._current_row: Optional[RowData] = None
+    def __init__(self, rows_data: List[RowData]):
+        self._rows_data = rows_data
 
-    def scan(self, *dest: Any) -> None:
-        if self._current_row is None:
-            raise ValueError("スキャンする行がありません。next()を先に呼び出してください。")
-        
-        if len(dest) != len(self._current_row):
-             raise ValueError(f"引数の数({len(dest)})とカラムの数({len(self._current_row)})が一致しません")
-        
-        # MySQLRowと同様に概念的な実装
-        print(f"警告: scan()は概念的な実装です。")
+    def __iter__(self):
+        return iter(self._rows_data)
 
+    # カーソルベースのメソッドは不要になる
     def next(self) -> bool:
-        self._current_row = self._cursor.fetchone()
-        return self._current_row is not None
-
-    def err(self) -> Optional[Exception]:
-        # DB-API 2.0ではイテレーション中のエラーは即座に例外として発生するため、
-        # このメソッドは通常Noneを返すか、未実装とする。
-        return None
+        return False
 
     def close(self) -> None:
-        self._cursor.close()
-
-    def fetchone(self) -> Optional[RowData]:
-        return self._cursor.fetchone()
-
-    def fetchall(self) -> List[RowData]:
-        return self._cursor.fetchall()
-    
-    def __iter__(self):
-        return self._cursor.__iter__()
+        pass
 
 
 # --- Transaction インターフェースのMySQL実装 ---
@@ -83,7 +61,6 @@ class MySQLTx(Tx):
     """
     def __init__(self, connection):
         self.conn = connection
-        # MySQLではトランザクション開始を明示的に行う
         self.conn.start_transaction()
         self.cursor = self.conn.cursor()
 
@@ -92,11 +69,13 @@ class MySQLTx(Tx):
 
     def query(self, query: str, *params: Any) -> Rows:
         self.cursor.execute(query, params)
-        return MySQLRows(self.cursor)
+        rows_data = self.cursor.fetchall()
+        return MySQLRows(rows_data)
 
     def query_row(self, query: str, *params: Any) -> Row:
         self.cursor.execute(query, params)
-        return MySQLRow(self.cursor.fetchone())
+        row_data = self.cursor.fetchone()
+        return MySQLRow(row_data)
 
     def commit(self) -> None:
         self.conn.commit()
@@ -122,7 +101,8 @@ class MySQLHandler(SQL):
                 password=config.password,
                 host=config.host,
                 port=config.port,
-                database=config.database
+                database=config.database,
+                charset='utf8mb4' # 文字化け対策を追加
             )
         except Exception as e:
             print(f"データベース接続に失敗しました: {e}")
@@ -132,7 +112,7 @@ class MySQLHandler(SQL):
         return self.pool.get_connection()
 
     def _put_connection(self, conn):
-        conn.close() # mysql-connector-pythonではclose()でプールに返却される
+        conn.close()
 
     def execute(self, query: str, *params: Any) -> None:
         conn = self._get_connection()
@@ -148,10 +128,14 @@ class MySQLHandler(SQL):
 
     def query(self, query: str, *params: Any) -> Rows:
         conn = self._get_connection()
-        cur = conn.cursor()
-        cur.execute(query, params)
-        # 注意: このカーソルと接続は呼び出し元で閉じる必要がある
-        return MySQLRows(cur)
+        rows_data = []
+        try:
+            with conn.cursor() as cur:
+                cur.execute(query, params)
+                rows_data = cur.fetchall()
+        finally:
+            self._put_connection(conn)
+        return MySQLRows(rows_data)
 
     def query_row(self, query: str, *params: Any) -> Row:
         conn = self._get_connection()
@@ -167,12 +151,6 @@ class MySQLHandler(SQL):
     def begin_tx(self) -> Tx:
         conn = self._get_connection()
         return MySQLTx(conn)
-
-    def close_pool(self):
-        """アプリケーション終了時にコネクションプールを閉じる"""
-        # mysql-connector-pythonのプールには明示的なcloseallがない
-        # アプリケーション終了時に自動的に処理される
-        print("MySQLコネクションプールはアプリケーション終了時に自動的にクリーンアップされます。")
 
 
 def NewMySQLHandler(config: MySQLConfig) -> MySQLHandler:
