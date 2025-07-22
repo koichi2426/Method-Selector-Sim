@@ -1,4 +1,7 @@
+import os
+import sys
 from logging.config import fileConfig
+from dotenv import load_dotenv
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -14,11 +17,18 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+# --- ここから編集 ---
+
+# backendディレクトリをPythonのパスに追加
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
+
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+from infrastructure.database.models import Base
+target_metadata = Base.metadata
+
+# --- ここまで編集 ---
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -57,8 +67,19 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # --- ここから編集 ---
+    # .env ファイルを読み込み、DB接続URLを動的に生成
+    load_dotenv()
+    db_url = (
+        f"mysql+mysqlconnector://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+        f"@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+    )
+    # configオブジェクトに組み立てたURLを設定
+    config.set_main_option("sqlalchemy.url", db_url)
+    # --- ここまで編集 ---
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config.get_section(config.config_main_section, {}), # config.config_ini_section は古いので修正
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
