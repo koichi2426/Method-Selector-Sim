@@ -56,5 +56,39 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```
 
 
+## データベースの確認方法
+
+データベースに正しくテーブルが作成され、データが保存されているかを確認する手順です。
+
+1.  **MySQLコンテナに入る**
+
+    ```bash
+    docker-compose -f docker-compose.dev.yml exec db /bin/sh
+    ```
+
+2.  **MySQLにログインする**
+
+    ```bash
+    mysql -u root -p
+    ```
+
+3.  **使用するデータベースを選択する**
+
+    ```bash
+    USE method_selector_db;
+    ```
+
+4.  **テーブル一覧を表示する**
+    ```bash
+    SHOW TABLES;
+    ```
+
+5.  *テーブルの中身を確認する**
+    （例として`datasets`テーブルを表示します。他のテーブル名に変えても使えます）
+    ```bash
+    SELECT * FROM datasets;
+    ```
+
+
 ## アーキテクチャ
 <img width="16384" height="14584" alt="image" src="https://github.com/user-attachments/assets/d7d3e94f-57bf-4bee-a291-d6fbc11dd25e" />
