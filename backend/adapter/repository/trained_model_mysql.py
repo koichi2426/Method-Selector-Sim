@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from domain import TrainedModel, TrainedModelRepository, UUID
-from adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows, RowData
 
 
 class TrainedModelMySQL(TrainedModelRepository):
@@ -14,7 +14,6 @@ class TrainedModelMySQL(TrainedModelRepository):
         self.db = db
 
     def create(self, model: TrainedModel) -> TrainedModel:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO trained_models (
                 id, name, dataset_id, description, file_path, created_at
@@ -35,11 +34,10 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error creating trained model: {e}")
 
     def find_by_id(self, model_id: UUID) -> Optional[TrainedModel]:
-        # 修正: プレースホルダを ? から %s に変更
         query = "SELECT * FROM trained_models WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, model_id.value)
-            return self._scan_row(row)
+            return self._scan_row_data(row.get_values())
         except Exception:
             return None
 
@@ -48,8 +46,8 @@ class TrainedModelMySQL(TrainedModelRepository):
         results = []
         try:
             rows = self.db.query(query)
-            while rows.next():
-                result = self._scan_rows(rows)
+            for row_data in rows:
+                result = self._scan_row_data(row_data)
                 if result:
                     results.append(result)
             return results
@@ -57,7 +55,6 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error finding all trained models: {e}")
 
     def update(self, model: TrainedModel) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE trained_models SET
                 name = %s,
@@ -81,45 +78,16 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error updating trained model: {e}")
 
     def delete(self, model_id: UUID) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = "DELETE FROM trained_models WHERE id = %s"
         try:
             self.db.execute(query, model_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting trained model: {e}")
 
-    def _scan_row(self, row: Row) -> Optional[TrainedModel]:
-        """単一のRowからTrainedModelを構築するヘルパー"""
-        try:
-            (
-                id_str,
-                name,
-                dataset_id_str,
-                description,
-                file_path,
-                created_at,
-            ) = ("", "", "", "", "", datetime.min)
-            row.scan(
-                id_str,
-                name,
-                dataset_id_str,
-                description,
-                file_path,
-                created_at,
-            )
-            return TrainedModel(
-                ID=UUID(value=id_str),
-                name=name,
-                Dataset_ID=UUID(value=dataset_id_str),
-                description=description,
-                file_path=file_path,
-                created_at=created_at,
-            )
-        except Exception:
+    def _scan_row_data(self, row_data: Optional[RowData]) -> Optional[TrainedModel]:
+        """単一のRowData(タプル)からTrainedModelを構築するヘルパー"""
+        if not row_data:
             return None
-
-    def _scan_rows(self, rows: Rows) -> Optional[TrainedModel]:
-        """複数のRowsからTrainedModelを構築するヘルパー"""
         try:
             (
                 id_str,
@@ -128,15 +96,7 @@ class TrainedModelMySQL(TrainedModelRepository):
                 description,
                 file_path,
                 created_at,
-            ) = ("", "", "", "", "", datetime.min)
-            rows.scan(
-                id_str,
-                name,
-                dataset_id_str,
-                description,
-                file_path,
-                created_at,
-            )
+            ) = row_data
             return TrainedModel(
                 ID=UUID(value=id_str),
                 name=name,
@@ -145,7 +105,8 @@ class TrainedModelMySQL(TrainedModelRepository):
                 file_path=file_path,
                 created_at=created_at,
             )
-        except Exception:
+        except Exception as e:
+            print(f"Error scanning row data: {e}")
             return None
 
 
