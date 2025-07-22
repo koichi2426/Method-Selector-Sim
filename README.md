@@ -56,6 +56,24 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```
 
 
+## データベースのマイグレーション手順 (Alembic)
+
+`infrastructure/database/models.py`のテーブル定義を変更した際に、その変更をデータベースに反映させるための手順です。
+
+1.  **マイグレーションファイルを作成**
+
+    `models.py`の変更内容と現在のデータベースの状態を比較し、差分を適用するためのスクリプトを自動生成します。
+    ```bash
+    docker-compose -f docker-compose.dev.yml run --rm backend python -m alembic revision --autogenerate -m "変更内容のコメント"
+    ```
+
+2.  **データベースに変更を適用**
+
+    ```bash
+    docker-compose -f docker-compose.dev.yml run --rm backend python -m alembic upgrade head
+    ```
+
+
 ## データベースの確認方法
 
 データベースに正しくテーブルが作成され、データが保存されているかを確認する手順です。
