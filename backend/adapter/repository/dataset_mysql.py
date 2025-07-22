@@ -15,10 +15,11 @@ class DatasetMySQL(DatasetRepository):
         self.db = db
 
     def create(self, dataset: Dataset) -> Dataset:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO datasets (
                 id, name, description, type, triplet_ids, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s, %s)
         """
         # triplet_ids (List[UUID]) をJSON文字列に変換
         triplet_ids_json = json.dumps([tid.value for tid in dataset.Triplet_ids])
@@ -38,7 +39,8 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error creating dataset: {e}")
 
     def find_by_id(self, dataset_id: UUID) -> Optional[Dataset]:
-        query = "SELECT * FROM datasets WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM datasets WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, dataset_id.value)
             return self._scan_row(row)
@@ -59,14 +61,15 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error finding all datasets: {e}")
 
     def update(self, dataset: Dataset) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE datasets SET
-                name = ?,
-                description = ?,
-                type = ?,
-                triplet_ids = ?,
-                created_at = ?
-            WHERE id = ?
+                name = %s,
+                description = %s,
+                type = %s,
+                triplet_ids = %s,
+                created_at = %s
+            WHERE id = %s
         """
         triplet_ids_json = json.dumps([tid.value for tid in dataset.Triplet_ids])
         try:
@@ -83,7 +86,8 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error updating dataset: {e}")
 
     def delete(self, dataset_id: UUID) -> None:
-        query = "DELETE FROM datasets WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM datasets WHERE id = %s"
         try:
             self.db.execute(query, dataset_id.value)
         except Exception as e:

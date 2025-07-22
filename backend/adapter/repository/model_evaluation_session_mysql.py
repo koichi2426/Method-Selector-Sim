@@ -16,10 +16,11 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
         self.db = db
 
     def create(self, session: ModelEvaluationSession) -> ModelEvaluationSession:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO model_evaluation_sessions (
                 id, trained_model_id, dataset_id, summary_metrics, created_at
-            ) VALUES (?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         # summary_metrics (EvaluationSummary) をJSON文字列に変換
         summary_metrics_json = json.dumps(session.summary_metrics.__dict__)
@@ -38,7 +39,8 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
             raise RuntimeError(f"error creating model evaluation session: {e}")
 
     def find_by_id(self, session_id: UUID) -> Optional[ModelEvaluationSession]:
-        query = "SELECT * FROM model_evaluation_sessions WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM model_evaluation_sessions WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, session_id.value)
             return self._scan_row(row)
@@ -59,13 +61,14 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
             raise RuntimeError(f"error finding all model evaluation sessions: {e}")
 
     def update(self, session: ModelEvaluationSession) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE model_evaluation_sessions SET
-                trained_model_id = ?,
-                dataset_id = ?,
-                summary_metrics = ?,
-                created_at = ?
-            WHERE id = ?
+                trained_model_id = %s,
+                dataset_id = %s,
+                summary_metrics = %s,
+                created_at = %s
+            WHERE id = %s
         """
         summary_metrics_json = json.dumps(session.summary_metrics.__dict__)
         try:
@@ -81,7 +84,8 @@ class ModelEvaluationSessionMySQL(ModelEvaluationSessionRepository):
             raise RuntimeError(f"error updating model evaluation session: {e}")
 
     def delete(self, session_id: UUID) -> None:
-        query = "DELETE FROM model_evaluation_sessions WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM model_evaluation_sessions WHERE id = %s"
         try:
             self.db.execute(query, session_id.value)
         except Exception as e:

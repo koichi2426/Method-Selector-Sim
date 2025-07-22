@@ -13,10 +13,11 @@ class TripletMySQL(TripletRepository):
         self.db = db
 
     def create(self, triplet: Triplet) -> Triplet:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO triplets (
                 id, training_ready_scenario_id, anchor, positive, negative
-            ) VALUES (?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -32,7 +33,8 @@ class TripletMySQL(TripletRepository):
             raise RuntimeError(f"error creating triplet: {e}")
 
     def find_by_id(self, triplet_id: UUID) -> Optional[Triplet]:
-        query = "SELECT * FROM triplets WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM triplets WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, triplet_id.value)
             return self._scan_row(row)
@@ -53,13 +55,14 @@ class TripletMySQL(TripletRepository):
             raise RuntimeError(f"error finding all triplets: {e}")
 
     def update(self, triplet: Triplet) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE triplets SET
-                training_ready_scenario_id = ?,
-                anchor = ?,
-                positive = ?,
-                negative = ?
-            WHERE id = ?
+                training_ready_scenario_id = %s,
+                anchor = %s,
+                positive = %s,
+                negative = %s
+            WHERE id = %s
         """
         try:
             self.db.execute(
@@ -74,7 +77,8 @@ class TripletMySQL(TripletRepository):
             raise RuntimeError(f"error updating triplet: {e}")
 
     def delete(self, triplet_id: UUID) -> None:
-        query = "DELETE FROM triplets WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM triplets WHERE id = %s"
         try:
             self.db.execute(query, triplet_id.value)
         except Exception as e:

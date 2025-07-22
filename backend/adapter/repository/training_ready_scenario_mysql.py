@@ -13,10 +13,11 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
         self.db = db
 
     def create(self, scenario: TrainingReadyScenario) -> TrainingReadyScenario:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO training_ready_scenarios (
                 id, scenario_id, state, method_group, negative_method_group
-            ) VALUES (?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -32,7 +33,8 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
             raise RuntimeError(f"error creating training_ready_scenario: {e}")
 
     def find_by_id(self, scenario_id: UUID) -> Optional[TrainingReadyScenario]:
-        query = "SELECT * FROM training_ready_scenarios WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM training_ready_scenarios WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, scenario_id.value)
             return self._scan_row(row)
@@ -53,13 +55,14 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
             raise RuntimeError(f"error finding all training_ready_scenarios: {e}")
 
     def update(self, scenario: TrainingReadyScenario) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE training_ready_scenarios SET
-                scenario_id = ?,
-                state = ?,
-                method_group = ?,
-                negative_method_group = ?
-            WHERE id = ?
+                scenario_id = %s,
+                state = %s,
+                method_group = %s,
+                negative_method_group = %s
+            WHERE id = %s
         """
         try:
             self.db.execute(
@@ -74,7 +77,8 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
             raise RuntimeError(f"error updating training_ready_scenario: {e}")
 
     def delete(self, scenario_id: UUID) -> None:
-        query = "DELETE FROM training_ready_scenarios WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM training_ready_scenarios WHERE id = %s"
         try:
             self.db.execute(query, scenario_id.value)
         except Exception as e:

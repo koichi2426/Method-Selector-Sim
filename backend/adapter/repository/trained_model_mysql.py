@@ -14,10 +14,11 @@ class TrainedModelMySQL(TrainedModelRepository):
         self.db = db
 
     def create(self, model: TrainedModel) -> TrainedModel:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO trained_models (
                 id, name, dataset_id, description, file_path, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -34,7 +35,8 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error creating trained model: {e}")
 
     def find_by_id(self, model_id: UUID) -> Optional[TrainedModel]:
-        query = "SELECT * FROM trained_models WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM trained_models WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, model_id.value)
             return self._scan_row(row)
@@ -55,14 +57,15 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error finding all trained models: {e}")
 
     def update(self, model: TrainedModel) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE trained_models SET
-                name = ?,
-                dataset_id = ?,
-                description = ?,
-                file_path = ?,
-                created_at = ?
-            WHERE id = ?
+                name = %s,
+                dataset_id = %s,
+                description = %s,
+                file_path = %s,
+                created_at = %s
+            WHERE id = %s
         """
         try:
             self.db.execute(
@@ -78,7 +81,8 @@ class TrainedModelMySQL(TrainedModelRepository):
             raise RuntimeError(f"error updating trained model: {e}")
 
     def delete(self, model_id: UUID) -> None:
-        query = "DELETE FROM trained_models WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM trained_models WHERE id = %s"
         try:
             self.db.execute(query, model_id.value)
         except Exception as e:

@@ -13,10 +13,11 @@ class ScenarioMySQL(ScenarioRepository):
         self.db = db
 
     def create(self, scenario: Scenario) -> Scenario:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO scenarios (
                 id, state, method_group, target_method, negative_method_group
-            ) VALUES (?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -32,7 +33,8 @@ class ScenarioMySQL(ScenarioRepository):
             raise RuntimeError(f"error creating scenario: {e}")
 
     def find_by_id(self, scenario_id: UUID) -> Optional[Scenario]:
-        query = "SELECT * FROM scenarios WHERE id = ? LIMIT 1"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "SELECT * FROM scenarios WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, scenario_id.value)
             return self._scan_row(row)
@@ -54,13 +56,14 @@ class ScenarioMySQL(ScenarioRepository):
             raise RuntimeError(f"error finding all scenarios: {e}")
 
     def update(self, scenario: Scenario) -> None:
+        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE scenarios SET
-                state = ?,
-                method_group = ?,
-                target_method = ?,
-                negative_method_group = ?
-            WHERE id = ?
+                state = %s,
+                method_group = %s,
+                target_method = %s,
+                negative_method_group = %s
+            WHERE id = %s
         """
         try:
             self.db.execute(
@@ -75,7 +78,8 @@ class ScenarioMySQL(ScenarioRepository):
             raise RuntimeError(f"error updating scenario: {e}")
 
     def delete(self, scenario_id: UUID) -> None:
-        query = "DELETE FROM scenarios WHERE id = ?"
+        # 修正: プレースホルダを ? から %s に変更
+        query = "DELETE FROM scenarios WHERE id = %s"
         try:
             self.db.execute(query, scenario_id.value)
         except Exception as e:
