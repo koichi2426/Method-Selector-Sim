@@ -201,7 +201,7 @@ def delete_processed_scenario(scenario_id: str):
     presenter = new_delete_processed_scenario_presenter()
     usecase = new_delete_processed_scenario_interactor(repo, presenter, ctx_timeout)
     controller = DeleteProcessedScenarioController(usecase)
-    input_data = DeleteProcessedScenarioInput(id=UUID(value=scenario_id))
+    input_data = DeleteProcessedScenarioInput(processed_scenario_id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
