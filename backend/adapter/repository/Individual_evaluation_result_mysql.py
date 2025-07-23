@@ -1,6 +1,6 @@
 from typing import List, Optional
 from domain import IndividualEvaluationResult, IndividualEvaluationResultRepository, UUID
-from adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows, RowData
 
 
 class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
@@ -13,7 +13,6 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
         self.db = db
 
     def create(self, result: IndividualEvaluationResult) -> IndividualEvaluationResult:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO individual_evaluation_results (
                 id, model_evaluation_session_id, test_data_id, 
@@ -34,30 +33,25 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             )
             return result
         except Exception as e:
-            # エラーロギングなどをここで行う
             raise RuntimeError(f"error creating individual evaluation result: {e}")
 
     def find_by_id(self, result_id: UUID) -> Optional[IndividualEvaluationResult]:
-        # 修正: プレースホルダを ? から %s に変更
         query = "SELECT * FROM individual_evaluation_results WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, result_id.value)
-            return self._scan_row(row)
-        except Exception as e:
-            # "Not Found" のような特定のエラーはここで判定し、Noneを返す
-            # ここでは一般的なエラーとして処理
+            return self._scan_row_data(row.get_values())
+        except Exception:
             return None
 
     def find_by_session_id(
         self, session_id: UUID
     ) -> List[IndividualEvaluationResult]:
-        # 修正: プレースホルダを ? から %s に変更
         query = "SELECT * FROM individual_evaluation_results WHERE model_evaluation_session_id = %s"
         results = []
         try:
             rows = self.db.query(query, session_id.value)
-            while rows.next():
-                result = self._scan_rows(rows)
+            for row_data in rows:
+                result = self._scan_row_data(row_data)
                 if result:
                     results.append(result)
             return results
@@ -67,7 +61,6 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             )
 
     def update(self, result: IndividualEvaluationResult) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE individual_evaluation_results SET
                 model_evaluation_session_id = %s,
@@ -93,52 +86,18 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
             raise RuntimeError(f"error updating individual evaluation result: {e}")
 
     def delete(self, result_id: UUID) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = "DELETE FROM individual_evaluation_results WHERE id = %s"
         try:
             self.db.execute(query, result_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting individual evaluation result: {e}")
 
-    def _scan_row(self, row: Row) -> Optional[IndividualEvaluationResult]:
-        """単一のRowからIndividualEvaluationResultを構築するヘルパー"""
-        try:
-            # プリミティブな型を格納するための変数を定義
-            id_str, session_id_str, test_data_id_str = "", "", ""
-            inference_time, power_consumption, score = 0.0, 0.0, 0.0
-            reasoning = ""
-
-            row.scan(
-                id_str,
-                session_id_str,
-                test_data_id_str,
-                inference_time,
-                power_consumption,
-                score,
-                reasoning,
-            )
-
-            return IndividualEvaluationResult(
-                ID=UUID(value=id_str),
-                ModelEvaluationSession_ID=UUID(value=session_id_str),
-                test_data_id=UUID(value=test_data_id_str),
-                inference_time_ms=inference_time,
-                power_consumption_mw=power_consumption,
-                llm_judge_score=score,
-                llm_judge_reasoning=reasoning,
-            )
-        except Exception:
-            # Scanでエラーが発生した場合（行が存在しないなど）
+    def _scan_row_data(self, row_data: Optional[RowData]) -> Optional[IndividualEvaluationResult]:
+        """単一のRowData(タプル)からIndividualEvaluationResultを構築するヘルパー"""
+        if not row_data:
             return None
-
-    def _scan_rows(self, rows: Rows) -> Optional[IndividualEvaluationResult]:
-        """複数のRowsからIndividualEvaluationResultを構築するヘルパー"""
         try:
-            id_str, session_id_str, test_data_id_str = "", "", ""
-            inference_time, power_consumption, score = 0.0, 0.0, 0.0
-            reasoning = ""
-
-            rows.scan(
+            (
                 id_str,
                 session_id_str,
                 test_data_id_str,
@@ -146,7 +105,7 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
                 power_consumption,
                 score,
                 reasoning,
-            )
+            ) = row_data
 
             return IndividualEvaluationResult(
                 ID=UUID(value=id_str),
@@ -157,7 +116,8 @@ class IndividualEvaluationResultMySQL(IndividualEvaluationResultRepository):
                 llm_judge_score=score,
                 llm_judge_reasoning=reasoning,
             )
-        except Exception:
+        except Exception as e:
+            print(f"Error scanning row data: {e}")
             return None
 
 

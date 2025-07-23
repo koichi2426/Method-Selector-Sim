@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List
 from dataclasses import is_dataclass
-from fastapi.responses import Response # このインポートを追加
+from fastapi.responses import Response 
 
 # --- Controller, Presenter, Repository, Usecase imports ---
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -22,6 +22,7 @@ from adapter.controller.delete_processed_scenario_controller import DeleteProces
 from adapter.controller.compose_new_dataset_controller import ComposeNewDatasetController
 from adapter.controller.delete_dataset_controller import DeleteDatasetController
 from adapter.controller.find_all_processed_scenarios_controller import FindAllProcessedScenariosController
+from adapter.controller.find_all_dataset_controller import FindAllDatasetController # 追加
 
 from adapter.presenter.find_all_scenario_presenter import new_find_all_scenario_presenter
 from adapter.presenter.generate_scenarios_presenter import new_generate_scenarios_presenter
@@ -38,6 +39,7 @@ from adapter.presenter.delete_processed_scenario_presenter import new_delete_pro
 from adapter.presenter.compose_new_dataset_presenter import new_compose_new_dataset_presenter
 from adapter.presenter.delete_dataset_presenter import new_delete_dataset_presenter
 from adapter.presenter.find_all_processed_scenarios_presenter import new_find_all_processed_scenarios_presenter
+from adapter.presenter.find_all_dataset_presenter import new_find_all_dataset_presenter # 追加
 
 from adapter.repository.scenario_mysql import ScenarioMySQL
 from adapter.repository.trained_model_mysql import TrainedModelMySQL
@@ -62,16 +64,18 @@ from usecase.delete_processed_scenario import DeleteProcessedScenarioInput, new_
 from usecase.compose_new_dataset import ComposeNewDatasetInput, new_compose_new_dataset_interactor
 from usecase.delete_dataset import DeleteDatasetInput, new_delete_dataset_interactor
 from usecase.find_all_processed_scenarios import new_find_all_processed_scenarios_interactor
+from usecase.find_all_dataset import new_find_all_dataset_interactor # 追加
 
 # --- Domain services ---
-from domain import (
-    ScenarioGeneratorDomainService,
-    ModelTrainerDomainService,
-    PerformanceEvaluatorDomainService,
-    TripletFormerDomainService,
-    PreprocessorDomainService,
-    UUID
-)
+from domain import UUID
+
+# --- Domain service implementations ---
+from infrastructure.domain.scenario_generator_domain_service_impl import ScenarioGeneratorDomainServiceImpl
+from infrastructure.domain.model_trainer_domain_service_impl import ModelTrainerDomainServiceImpl
+from infrastructure.domain.performance_evaluator_domain_service_impl import PerformanceEvaluatorDomainServiceImpl
+from infrastructure.domain.triplet_former_domain_service_impl import TripletFormerDomainServiceImpl
+from infrastructure.domain.preprocessor_domain_service_impl import PreprocessorDomainServiceImpl
+
 
 from infrastructure.database.mysql_handler import MySQLHandler
 from infrastructure.database.config import NewMySQLConfigFromEnv
@@ -149,7 +153,7 @@ def get_all_scenarios():
 def generate_scenarios(request: GenerateScenariosRequest):
     repo = ScenarioMySQL(db_handler)
     presenter = new_generate_scenarios_presenter()
-    domain_service = ScenarioGeneratorDomainService()
+    domain_service = ScenarioGeneratorDomainServiceImpl() # 修正
     usecase = new_generate_scenarios_interactor(repo, presenter, domain_service, ctx_timeout)
     controller = GenerateScenariosController(usecase)
     input_data = GenerateScenariosInput(
@@ -164,9 +168,9 @@ def generate_scenarios(request: GenerateScenariosRequest):
 def delete_scenario(scenario_id: str):
     repo = ScenarioMySQL(db_handler)
     presenter = new_delete_scenario_presenter()
-    usecase = new_delete_scenario_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_scenario_interactor(presenter, repo, ctx_timeout)
     controller = DeleteScenarioController(usecase)
-    input_data = DeleteScenarioInput(id=UUID(value=scenario_id))
+    input_data = DeleteScenarioInput(scenario_id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
@@ -175,7 +179,7 @@ def process_scenario(request: ProcessScenarioRequest):
     scenario_repo = ScenarioMySQL(db_handler)
     trs_repo = TrainingReadyScenarioMySQL(db_handler)
     presenter = new_process_scenario_presenter()
-    domain_service = PreprocessorDomainService()
+    domain_service = PreprocessorDomainServiceImpl() # 修正
     usecase = new_process_scenario_interactor(scenario_repo, trs_repo, presenter, domain_service, ctx_timeout)
     controller = ProcessScenarioController(usecase)
     input_data = ProcessScenarioInput(
@@ -198,9 +202,9 @@ def get_all_processed_scenarios():
 def delete_processed_scenario(scenario_id: str):
     repo = TrainingReadyScenarioMySQL(db_handler)
     presenter = new_delete_processed_scenario_presenter()
-    usecase = new_delete_processed_scenario_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_processed_scenario_interactor(presenter, repo, ctx_timeout)
     controller = DeleteProcessedScenarioController(usecase)
-    input_data = DeleteProcessedScenarioInput(id=UUID(value=scenario_id))
+    input_data = DeleteProcessedScenarioInput(processed_scenario_id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
@@ -219,7 +223,7 @@ def train_new_model(request: TrainNewModelRequest):
     dataset_repo = DatasetMySQL(db_handler)
     trained_model_repo = TrainedModelMySQL(db_handler)
     presenter = new_train_new_model_presenter()
-    domain_service = ModelTrainerDomainService()
+    domain_service = ModelTrainerDomainServiceImpl() # 修正
     usecase = new_train_new_model_interactor(dataset_repo, trained_model_repo, presenter, domain_service, ctx_timeout)
     controller = TrainNewModelController(usecase)
     input_data = TrainNewModelInput(
@@ -237,7 +241,7 @@ def evaluate_model(request: EvaluateModelRequest):
     dataset_repo = DatasetMySQL(db_handler)
     session_repo = ModelEvaluationSessionMySQL(db_handler)
     presenter = new_evaluate_model_presenter()
-    domain_service = PerformanceEvaluatorDomainService()
+    domain_service = PerformanceEvaluatorDomainServiceImpl() # 修正
     usecase = new_evaluate_model_interactor(model_repo, dataset_repo, session_repo, presenter, domain_service, ctx_timeout)
     controller = EvaluateModelController(usecase)
     input_data = EvaluateModelInput(
@@ -258,6 +262,15 @@ def delete_model(model_id: str):
     return handle_response(response_dict, success_code=204)
 
 # --- Dataset endpoints ---
+@router.get("/v1/datasets") # 追加
+def get_all_datasets():
+    repo = DatasetMySQL(db_handler)
+    presenter = new_find_all_dataset_presenter()
+    usecase = new_find_all_dataset_interactor(presenter, repo, ctx_timeout)
+    controller = FindAllDatasetController(usecase)
+    response_dict = controller.execute()
+    return handle_response(response_dict)
+
 @router.post("/v1/datasets")
 def compose_new_dataset(request: ComposeNewDatasetRequest):
     repo = DatasetMySQL(db_handler)
@@ -297,7 +310,7 @@ def form_triplets_from(request: FormTripletsFromRequest):
     trs_repo = TrainingReadyScenarioMySQL(db_handler)
     triplet_repo = TripletMySQL(db_handler)
     presenter = new_form_triplets_from_presenter()
-    domain_service = TripletFormerDomainService()
+    domain_service = TripletFormerDomainServiceImpl() # 修正
     usecase = new_form_triplets_from_interactor(trs_repo, triplet_repo, presenter, domain_service, ctx_timeout)
     controller = FormTripletsFromController(usecase)
     input_data = FormTripletsFromInput(
@@ -310,9 +323,9 @@ def form_triplets_from(request: FormTripletsFromRequest):
 def delete_triplets(triplet_id: str):
     repo = TripletMySQL(db_handler)
     presenter = new_delete_triplets_presenter()
-    usecase = new_delete_triplets_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_triplets_interactor(presenter, repo, ctx_timeout)
     controller = DeleteTripletsController(usecase)
-    input_data = DeleteTripletsInput(id=UUID(value=triplet_id))
+    input_data = DeleteTripletsInput(triplet_id=UUID(value=triplet_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 

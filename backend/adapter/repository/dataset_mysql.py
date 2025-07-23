@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from typing import List, Optional
 from domain import Dataset, DatasetRepository, UUID
-from adapter.repository.sql import SQL, Row, Rows
+from adapter.repository.sql import SQL, Row, Rows, RowData
 
 
 class DatasetMySQL(DatasetRepository):
@@ -15,13 +15,11 @@ class DatasetMySQL(DatasetRepository):
         self.db = db
 
     def create(self, dataset: Dataset) -> Dataset:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             INSERT INTO datasets (
                 id, name, description, type, triplet_ids, created_at
             ) VALUES (%s, %s, %s, %s, %s, %s)
         """
-        # triplet_ids (List[UUID]) をJSON文字列に変換
         triplet_ids_json = json.dumps([tid.value for tid in dataset.Triplet_ids])
 
         try:
@@ -39,11 +37,10 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error creating dataset: {e}")
 
     def find_by_id(self, dataset_id: UUID) -> Optional[Dataset]:
-        # 修正: プレースホルダを ? から %s に変更
         query = "SELECT * FROM datasets WHERE id = %s LIMIT 1"
         try:
             row = self.db.query_row(query, dataset_id.value)
-            return self._scan_row(row)
+            return self._scan_row_data(row.get_values())
         except Exception:
             return None
 
@@ -52,8 +49,8 @@ class DatasetMySQL(DatasetRepository):
         results = []
         try:
             rows = self.db.query(query)
-            while rows.next():
-                result = self._scan_rows(rows)
+            for row_data in rows:
+                result = self._scan_row_data(row_data)
                 if result:
                     results.append(result)
             return results
@@ -61,7 +58,6 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error finding all datasets: {e}")
 
     def update(self, dataset: Dataset) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = """
             UPDATE datasets SET
                 name = %s,
@@ -86,47 +82,16 @@ class DatasetMySQL(DatasetRepository):
             raise RuntimeError(f"error updating dataset: {e}")
 
     def delete(self, dataset_id: UUID) -> None:
-        # 修正: プレースホルダを ? から %s に変更
         query = "DELETE FROM datasets WHERE id = %s"
         try:
             self.db.execute(query, dataset_id.value)
         except Exception as e:
             raise RuntimeError(f"error deleting dataset: {e}")
 
-    def _scan_row(self, row: Row) -> Optional[Dataset]:
-        """単一のRowからDatasetを構築するヘルパー"""
-        try:
-            (
-                id_str,
-                name,
-                description,
-                type,
-                triplet_ids_json,
-                created_at,
-            ) = ("", "", "", "", "", datetime.min)
-            row.scan(
-                id_str,
-                name,
-                description,
-                type,
-                triplet_ids_json,
-                created_at,
-            )
-            # JSON文字列をList[UUID]に変換
-            triplet_ids = [UUID(value=tid) for tid in json.loads(triplet_ids_json)]
-            return Dataset(
-                ID=UUID(value=id_str),
-                name=name,
-                description=description,
-                type=type,
-                Triplet_ids=triplet_ids,
-                created_at=created_at,
-            )
-        except Exception:
+    def _scan_row_data(self, row_data: Optional[RowData]) -> Optional[Dataset]:
+        """単一のRowData(タプル)からDatasetを構築するヘルパー"""
+        if not row_data:
             return None
-
-    def _scan_rows(self, rows: Rows) -> Optional[Dataset]:
-        """複数のRowsからDatasetを構築するヘルパー"""
         try:
             (
                 id_str,
@@ -135,15 +100,8 @@ class DatasetMySQL(DatasetRepository):
                 type,
                 triplet_ids_json,
                 created_at,
-            ) = ("", "", "", "", "", datetime.min)
-            rows.scan(
-                id_str,
-                name,
-                description,
-                type,
-                triplet_ids_json,
-                created_at,
-            )
+            ) = row_data
+            
             triplet_ids = [UUID(value=tid) for tid in json.loads(triplet_ids_json)]
             return Dataset(
                 ID=UUID(value=id_str),
@@ -153,7 +111,8 @@ class DatasetMySQL(DatasetRepository):
                 Triplet_ids=triplet_ids,
                 created_at=created_at,
             )
-        except Exception:
+        except Exception as e:
+            print(f"Error scanning row data: {e}")
             return None
 
 
