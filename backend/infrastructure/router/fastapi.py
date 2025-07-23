@@ -199,7 +199,7 @@ def get_all_processed_scenarios():
 def delete_processed_scenario(scenario_id: str):
     repo = TrainingReadyScenarioMySQL(db_handler)
     presenter = new_delete_processed_scenario_presenter()
-    usecase = new_delete_processed_scenario_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_processed_scenario_interactor(presenter, repo, ctx_timeout)
     controller = DeleteProcessedScenarioController(usecase)
     input_data = DeleteProcessedScenarioInput(processed_scenario_id=UUID(value=scenario_id))
     response_dict = controller.execute(input_data)
