@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List
 from dataclasses import is_dataclass
-from fastapi.responses import Response # このインポートを追加
+from fastapi.responses import Response 
 
 # --- Controller, Presenter, Repository, Usecase imports ---
 from adapter.controller.find_all_scenario_controller import FindAllScenarioController
@@ -22,6 +22,7 @@ from adapter.controller.delete_processed_scenario_controller import DeleteProces
 from adapter.controller.compose_new_dataset_controller import ComposeNewDatasetController
 from adapter.controller.delete_dataset_controller import DeleteDatasetController
 from adapter.controller.find_all_processed_scenarios_controller import FindAllProcessedScenariosController
+from adapter.controller.find_all_dataset_controller import FindAllDatasetController # 追加
 
 from adapter.presenter.find_all_scenario_presenter import new_find_all_scenario_presenter
 from adapter.presenter.generate_scenarios_presenter import new_generate_scenarios_presenter
@@ -38,6 +39,7 @@ from adapter.presenter.delete_processed_scenario_presenter import new_delete_pro
 from adapter.presenter.compose_new_dataset_presenter import new_compose_new_dataset_presenter
 from adapter.presenter.delete_dataset_presenter import new_delete_dataset_presenter
 from adapter.presenter.find_all_processed_scenarios_presenter import new_find_all_processed_scenarios_presenter
+from adapter.presenter.find_all_dataset_presenter import new_find_all_dataset_presenter # 追加
 
 from adapter.repository.scenario_mysql import ScenarioMySQL
 from adapter.repository.trained_model_mysql import TrainedModelMySQL
@@ -62,11 +64,12 @@ from usecase.delete_processed_scenario import DeleteProcessedScenarioInput, new_
 from usecase.compose_new_dataset import ComposeNewDatasetInput, new_compose_new_dataset_interactor
 from usecase.delete_dataset import DeleteDatasetInput, new_delete_dataset_interactor
 from usecase.find_all_processed_scenarios import new_find_all_processed_scenarios_interactor
+from usecase.find_all_dataset import new_find_all_dataset_interactor # 追加
 
 # --- Domain services ---
 from domain import UUID
 
-# --- Domain service implementations (修正箇所) ---
+# --- Domain service implementations ---
 from infrastructure.domain.scenario_generator_domain_service_impl import ScenarioGeneratorDomainServiceImpl
 from infrastructure.domain.model_trainer_domain_service_impl import ModelTrainerDomainServiceImpl
 from infrastructure.domain.performance_evaluator_domain_service_impl import PerformanceEvaluatorDomainServiceImpl
@@ -259,6 +262,15 @@ def delete_model(model_id: str):
     return handle_response(response_dict, success_code=204)
 
 # --- Dataset endpoints ---
+@router.get("/v1/datasets") # 追加
+def get_all_datasets():
+    repo = DatasetMySQL(db_handler)
+    presenter = new_find_all_dataset_presenter()
+    usecase = new_find_all_dataset_interactor(presenter, repo, ctx_timeout)
+    controller = FindAllDatasetController(usecase)
+    response_dict = controller.execute()
+    return handle_response(response_dict)
+
 @router.post("/v1/datasets")
 def compose_new_dataset(request: ComposeNewDatasetRequest):
     repo = DatasetMySQL(db_handler)
