@@ -323,9 +323,9 @@ def form_triplets_from(request: FormTripletsFromRequest):
 def delete_triplets(triplet_id: str):
     repo = TripletMySQL(db_handler)
     presenter = new_delete_triplets_presenter()
-    usecase = new_delete_triplets_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_triplets_interactor(presenter, repo, ctx_timeout)
     controller = DeleteTripletsController(usecase)
-    input_data = DeleteTripletsInput(id=UUID(value=triplet_id))
+    input_data = DeleteTripletsInput(triplet_id=UUID(value=triplet_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
