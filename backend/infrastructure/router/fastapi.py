@@ -255,9 +255,9 @@ def evaluate_model(request: EvaluateModelRequest):
 def delete_model(model_id: str):
     repo = TrainedModelMySQL(db_handler)
     presenter = new_delete_model_presenter()
-    usecase = new_delete_model_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_model_interactor(presenter, repo, ctx_timeout)
     controller = DeleteModelController(usecase)
-    input_data = DeleteModelInput(id=UUID(value=model_id))
+    input_data = DeleteModelInput(model_id=UUID(value=model_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 
