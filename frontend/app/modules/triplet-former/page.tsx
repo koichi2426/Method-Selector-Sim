@@ -124,6 +124,16 @@ export default function TripletConverterPage() {
     }
   };
 
+  // --- ここに関数を追加 ---
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+        setToast({ message: `${label} をコピーしました！`, type: 'success' });
+    }, (err) => {
+        console.error('Copy failed', err);
+        setToast({ message: 'コピーに失敗しました。', type: 'error' });
+    });
+  };
+
   useEffect(() => {
     fetchScenarios();
   }, []);
