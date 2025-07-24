@@ -38,7 +38,6 @@ export default function PreprocessorPage() {
   const [methodFilter, setMethodFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
-  // エラーを修正: 'id' を 'ID' に変更
   const [sortBy, setSortBy] = useState<'state' | 'target_method' | 'ID'>('state');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
@@ -189,7 +188,7 @@ export default function PreprocessorPage() {
   // --- Render ---
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950">
       <Header />
       
       <div className="flex-1 flex overflow-hidden">
@@ -298,7 +297,6 @@ export default function PreprocessorPage() {
                 </select>
               </div>
               <div className="lg:w-48">
-                {/* エラーを修正: 'id' を 'ID' に変更 */}
                 <select value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [field, order] = e.target.value.split('-'); setSortBy(field as 'state' | 'target_method' | 'ID'); setSortOrder(order as 'asc' | 'desc'); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option value="state-asc">状態 (昇順)</option>
                   <option value="state-desc">状態 (降順)</option>

@@ -276,7 +276,7 @@ export default function DatabaseTripletsPage() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
+      <div className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950">
         <Header />
         <div className="flex-1 flex overflow-hidden">
           <aside className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">{sidebarContent}</aside>
