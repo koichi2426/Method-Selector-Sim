@@ -18,10 +18,11 @@ import {
 // Tripletデータの型定義を更新
 interface Triplet {
   ID: string;
-  TrainingReadyScenario_ID: string; // 追加
+  TrainingReadyScenario_ID: string;
   anchor: string;
   positive: string;
   negative: string;
+  created_at: string; // created_atを追加
 }
 
 // 検索キーワードをハイライト表示するためのヘルパーコンポーネント
@@ -55,8 +56,8 @@ export default function DatabaseTripletsPage() {
   
   // Filtering, Sorting, Pagination States
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'anchor' | 'ID'>('anchor');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<'anchor' | 'ID' | 'created_at'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
@@ -162,7 +163,7 @@ export default function DatabaseTripletsPage() {
                 triplet.positive.toLowerCase().includes(searchLower) ||
                 triplet.negative.toLowerCase().includes(searchLower) ||
                 triplet.ID.toLowerCase().includes(searchLower) ||
-                triplet.TrainingReadyScenario_ID.toLowerCase().includes(searchLower) // 検索対象に追加
+                triplet.TrainingReadyScenario_ID.toLowerCase().includes(searchLower)
             );
         });
     }
@@ -230,7 +231,7 @@ export default function DatabaseTripletsPage() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tripletデータ一覧</h3>
         <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative"><SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" /><input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Anchor, Positive, Negative, IDなどで検索..." className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" /></div>
-            <div className="lg:w-48"><select value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [field, order] = e.target.value.split('-'); setSortBy(field as 'anchor' | 'ID'); setSortOrder(order as 'asc' | 'desc'); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="anchor-asc">Anchor (昇順)</option><option value="anchor-desc">Anchor (降順)</option><option value="ID-asc">ID (昇順)</option><option value="ID-desc">ID (降順)</option></select></div>
+            <div className="lg:w-48"><select value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [field, order] = e.target.value.split('-'); setSortBy(field as 'anchor' | 'ID' | 'created_at'); setSortOrder(order as 'asc' | 'desc'); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="created_at-desc">作成日時 (新しい順)</option><option value="created_at-asc">作成日時 (古い順)</option><option value="anchor-asc">Anchor (昇順)</option><option value="anchor-desc">Anchor (降順)</option><option value="ID-asc">ID (昇順)</option><option value="ID-desc">ID (降順)</option></select></div>
         </div>
       </div>
 
@@ -263,6 +264,9 @@ export default function DatabaseTripletsPage() {
                             <span className="text-gray-700 dark:text-gray-300 truncate">{triplet.TrainingReadyScenario_ID}</span>
                             <button onClick={(e) => { e.stopPropagation(); copyToClipboard(triplet.TrainingReadyScenario_ID, 'Scenario ID'); }} className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 flex-shrink-0"><ClipboardDocumentIcon className="h-4 w-4" /></button>
                         </div>
+                    </div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        Created: {new Date(triplet.created_at).toLocaleString('ja-JP')}
                     </div>
                   </div>
                 </div>

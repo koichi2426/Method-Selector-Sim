@@ -22,6 +22,7 @@ interface ProcessedScenario {
   state: string;
   method_group: string[];
   negative_method_group: string[];
+  created_at: string; // created_atを追加
 }
 
 // 検索キーワードをハイライト表示するためのヘルパーコンポーネント
@@ -55,8 +56,8 @@ export default function ProcessedDataStorePage() {
   
   // Filtering, Sorting, Pagination States
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'state' | 'ID'>('state');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<'state' | 'ID' | 'created_at'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
@@ -260,7 +261,7 @@ export default function ProcessedDataStorePage() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">ログデータ一覧</h3>
         <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative"><SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" /><input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="状態、メソッド、IDで検索..." className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent" /></div>
-            <div className="lg:w-48"><select value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [field, order] = e.target.value.split('-'); setSortBy(field as 'state' | 'ID'); setSortOrder(order as 'asc' | 'desc'); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="state-asc">状態 (昇順)</option><option value="state-desc">状態 (降順)</option><option value="ID-asc">ID (昇順)</option><option value="ID-desc">ID (降順)</option></select></div>
+            <div className="lg:w-48"><select value={`${sortBy}-${sortOrder}`} onChange={(e) => { const [field, order] = e.target.value.split('-'); setSortBy(field as 'state' | 'ID' | 'created_at'); setSortOrder(order as 'asc' | 'desc'); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="created_at-desc">作成日時 (新しい順)</option><option value="created_at-asc">作成日時 (古い順)</option><option value="state-asc">状態 (昇順)</option><option value="state-desc">状態 (降順)</option><option value="ID-asc">ID (昇順)</option><option value="ID-desc">ID (降順)</option></select></div>
         </div>
       </div>
 
@@ -280,6 +281,9 @@ export default function ProcessedDataStorePage() {
                     <h4 className="text-sm font-medium text-gray-900 dark:text-white leading-5"><Highlight text={scenario.state} highlight={searchTerm} /></h4>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2"><div className="flex items-center gap-2"><span className="text-xs text-gray-500 dark:text-gray-400">メソッド:</span><div className="flex flex-wrap gap-1">{scenario.method_group.map((m, i) => <span key={i} className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">{m}</span>)}</div></div>{scenario.negative_method_group.length > 0 && (<div className="flex items-center gap-2"><span className="text-xs text-gray-500 dark:text-gray-400">除外:</span><div className="flex flex-wrap gap-1">{scenario.negative_method_group.map((m, i) => <span key={i} className="px-2 py-0.5 text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded">{m}</span>)}</div></div>)}</div>
                     <div className="font-mono text-xs text-gray-500 dark:text-gray-400 mt-3 space-y-1"><div className="flex items-center gap-2"><span className="flex-shrink-0">ID:</span><span className="text-gray-700 dark:text-gray-300 truncate">{scenario.ID}</span><button onClick={(e) => { e.stopPropagation(); copyToClipboard(scenario.ID, 'ID'); }} className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 flex-shrink-0"><ClipboardDocumentIcon className="h-4 w-4" /></button></div><div className="flex items-center gap-2"><span className="flex-shrink-0">Scenario ID:</span><span className="text-gray-700 dark:text-gray-300 truncate">{scenario.Scenario_ID}</span><button onClick={(e) => { e.stopPropagation(); copyToClipboard(scenario.Scenario_ID, 'Scenario ID'); }} className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 flex-shrink-0"><ClipboardDocumentIcon className="h-4 w-4" /></button></div></div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        Created: {new Date(scenario.created_at).toLocaleString('ja-JP')}
+                    </div>
                   </div>
                   <div className="flex-shrink-0"><button onClick={(e) => { e.stopPropagation(); handleDeleteClick(scenario); }} disabled={deletingId === scenario.ID} className="p-2 text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50">{deletingId === scenario.ID ? <Spinner className="h-5 w-5" /> : <TrashIcon className="h-5 w-5" />}</button></div>
                 </div>
