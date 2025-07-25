@@ -30,8 +30,13 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```bash
     cd Method-Selector-Sim/frontend
     ```
+3.  **データベースに変更を適用**
+    マイグレーションファイルを適用。
+    ```bash
+    docker-compose -f docker-compose.dev.yml run --rm backend python -m alembic upgrade head
+    ```
 
-3.  **Dockerコンテナをビルドして起動**
+5.  **Dockerコンテナをビルドして起動**
 
     ```bash
     docker-compose up --build -d
@@ -44,11 +49,11 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
       * `--build`: イメージを再ビルドします（初回起動時やDockerfile変更時に必要）。
       * `-d`: バックグラウンドでコンテナを起動します（デタッチモード）。
 
-4.  **ブラウザでアクセス**
+6.  **ブラウザでアクセス**
     起動後、ブラウザで以下のURLにアクセスしてください。
     [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
 
-5.  **コンテナの停止**
+7.  **コンテナの停止**
     アプリケーションを停止する場合は、以下のコマンドを実行します。
 
     ```bash
