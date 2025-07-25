@@ -1,7 +1,8 @@
 import abc
 from dataclasses import dataclass
-from typing import Protocol, List
+from typing import List, Protocol
 from domain import Scenario, ScenarioRepository, TrainingReadyScenario, TrainingReadyScenarioRepository, PreprocessorDomainService, UUID
+from datetime import datetime  # datetimeをインポート
 
 
 class ProcessScenarioUseCase(Protocol):
@@ -23,6 +24,7 @@ class ProcessScenarioOutput:
     state: str
     method_group: str
     negative_method_group: str
+    created_at: datetime  # created_atフィールドを追加
 
 
 class ProcessScenarioPresenter(abc.ABC):

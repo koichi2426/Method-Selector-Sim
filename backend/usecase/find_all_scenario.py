@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol, List
 from domain import Scenario, ScenarioRepository, UUID
+from datetime import datetime  # datetimeをインポート
 
 
 class FindAllScenarioUseCase(Protocol):
@@ -16,6 +17,7 @@ class FindAllScenarioOutput:
     method_group: str
     target_method: str
     negative_method_group: str
+    created_at: datetime  # created_atフィールドを追加
 
 
 class FindAllScenarioPresenter(abc.ABC):

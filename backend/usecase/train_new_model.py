@@ -2,7 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol
 from datetime import datetime
-from domain import Dataset, DatasetRepository, TrainingParameters, NewTrainingParameters, TrainedModel, TrainedModelRepository, ModelTrainerDomainService, UUID
+from domain import Dataset, DatasetRepository, TrainingParameters, NewTrainingParameters, TrainedModel, TrainedModelRepository, ModelTrainerDomainService, UUID, NewUUID
 
 
 class TrainNewModelUseCase(Protocol):
@@ -18,6 +18,8 @@ class TrainNewModelInput:
     epochs: int
     batch_size: int
     learning_rate: float
+    name: str
+    description: str
 
 
 @dataclass
@@ -59,7 +61,13 @@ class TrainNewModelInteractor:
             if not dataset:
                 raise ValueError(f"Dataset with ID {input_data.dataset_id} not found.")
 
+            # NewUUID() を使用してIDを生成
+            new_training_id = NewUUID()
+
             params = NewTrainingParameters(
+                ID=new_training_id,
+                name=input_data.name,
+                description=input_data.description,
                 epochs=input_data.epochs,
                 batch_size=input_data.batch_size,
                 learning_rate=input_data.learning_rate,
@@ -74,8 +82,6 @@ class TrainNewModelInteractor:
             return output, None
 
         except Exception as e:
-            from datetime import datetime
-            from domain import UUID
             empty_output = TrainNewModelOutput(
                 ID=UUID(value="00000000-0000-0000-0000-000000000000"),
                 name="",

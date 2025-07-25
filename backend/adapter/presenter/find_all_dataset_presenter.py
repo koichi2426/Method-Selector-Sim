@@ -1,34 +1,24 @@
-from typing import List
-from usecase.find_all_dataset import (
-    FindAllDatasetPresenter,
-    FindAllDatasetOutput,
-    DatasetOutputDTO,
-)
+from typing import List, Dict, Any
+from usecase.find_all_dataset import FindAllDatasetPresenter
 from domain import Dataset
 
-
 class FindAllDatasetPresenterImpl(FindAllDatasetPresenter):
-    def output(self, datasets: List[Dataset]) -> FindAllDatasetOutput:
+    def output(self, datasets: List[Dataset]) -> List[Dict[str, Any]]:
         """
         Datasetドメインオブジェクトのリストを、
-        FindAllDatasetOutput DTOに変換する。
+        JSONシリアライズ可能な辞書のリストに変換して返す。
         """
-        dtos = []
-        for dataset in datasets:
-            # 各DatasetオブジェクトをDatasetOutputDTOに変換
-            dto = DatasetOutputDTO(
-                ID=dataset.ID,
-                name=dataset.name,
-                description=dataset.description,
-                type=dataset.type,
-                Triplet_ids=dataset.Triplet_ids,
-                created_at=dataset.created_at.isoformat(),
-            )
-            dtos.append(dto)
-        
-        # DTOのリストを最終的なOutputオブジェクトでラップして返す
-        return FindAllDatasetOutput(datasets=dtos)
-
+        return [
+            {
+                "ID": d.ID.value,
+                "name": d.name,
+                "description": d.description,
+                "type": d.type,
+                "Triplet_ids": [tid.value for tid in d.Triplet_ids],
+                "created_at": d.created_at.isoformat()
+            }
+            for d in datasets
+        ]
 
 def new_find_all_dataset_presenter() -> FindAllDatasetPresenter:
     """

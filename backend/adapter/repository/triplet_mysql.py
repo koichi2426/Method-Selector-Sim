@@ -1,6 +1,7 @@
 from typing import List, Optional
 from domain import Triplet, TripletRepository, UUID
 from adapter.repository.sql import SQL, RowData
+from datetime import datetime # datetimeをインポート
 
 
 class TripletMySQL(TripletRepository):
@@ -15,8 +16,8 @@ class TripletMySQL(TripletRepository):
     def create(self, triplet: Triplet) -> Triplet:
         query = """
             INSERT INTO triplets (
-                id, training_ready_scenario_id, anchor, positive, negative
-            ) VALUES (%s, %s, %s, %s, %s)
+                id, training_ready_scenario_id, anchor, positive, negative, created_at
+            ) VALUES (%s, %s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -26,6 +27,7 @@ class TripletMySQL(TripletRepository):
                 triplet.anchor,
                 triplet.positive,
                 triplet.negative,
+                triplet.created_at, # created_atを追加
             )
             return triplet
         except Exception as e:
@@ -90,6 +92,7 @@ class TripletMySQL(TripletRepository):
                 anchor,
                 positive,
                 negative,
+                created_at, # created_atを追加
             ) = row_data
             return Triplet(
                 ID=UUID(value=id_str),
@@ -97,6 +100,7 @@ class TripletMySQL(TripletRepository):
                 anchor=anchor,
                 positive=positive,
                 negative=negative,
+                created_at=created_at, # created_atを追加
             )
         except Exception as e:
             print(f"Error scanning row data: {e}")

@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import List, Protocol
 from domain import Scenario, ScenarioRepository, MethodProfile, Situation, ScenarioGeneratorDomainService, LogGenerationConfig, UUID
+from datetime import datetime  # datetimeをインポート
 
 class GenerateScenariosUseCase(Protocol):
     def execute(
@@ -24,6 +25,7 @@ class GenerateScenariosOutput:
     method_group: str
     target_method: str
     negative_method_group: str
+    created_at: datetime  # created_atフィールドを追加
 
 
 class GenerateScenariosPresenter(abc.ABC):

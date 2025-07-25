@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import List, Optional
 from .custom_uuid import UUID
+from datetime import datetime  # datetimeをインポート
 
 @dataclass
 class Scenario:
@@ -10,6 +11,7 @@ class Scenario:
     method_group: str
     target_method: str
     negative_method_group: str
+    created_at: datetime  # created_atフィールドを追加
 
 class ScenarioRepository(abc.ABC):
     @abc.abstractmethod
@@ -38,6 +40,7 @@ def NewScenario(
     method_group: str,
     target_method: str,
     negative_method_group: str,
+    created_at: datetime, # created_atを引数として受け取る
 ) -> Scenario:
     """
     Scenarioインスタンスを生成するファクトリ関数。
@@ -48,4 +51,5 @@ def NewScenario(
         method_group=method_group,
         target_method=target_method,
         negative_method_group=negative_method_group,
+        created_at=created_at, # created_atを渡す
     )

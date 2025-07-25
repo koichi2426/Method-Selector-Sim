@@ -95,6 +95,9 @@ class TrainNewModelRequest(BaseModel):
     epochs: int
     batch_size: int
     learning_rate: float
+    # ★追加するフィールド★
+    name: str # 例: "My First Training Run"
+    description: str # 例: "Training a model for image classification."
 
 class EvaluateModelRequest(BaseModel):
     model_id: str
@@ -223,7 +226,7 @@ def train_new_model(request: TrainNewModelRequest):
     dataset_repo = DatasetMySQL(db_handler)
     trained_model_repo = TrainedModelMySQL(db_handler)
     presenter = new_train_new_model_presenter()
-    domain_service = ModelTrainerDomainServiceImpl() # 修正
+    domain_service = ModelTrainerDomainServiceImpl()
     usecase = new_train_new_model_interactor(dataset_repo, trained_model_repo, presenter, domain_service, ctx_timeout)
     controller = TrainNewModelController(usecase)
     input_data = TrainNewModelInput(
@@ -231,6 +234,9 @@ def train_new_model(request: TrainNewModelRequest):
         epochs=request.epochs,
         batch_size=request.batch_size,
         learning_rate=request.learning_rate,
+        # ★追加する引数★
+        name=request.name,
+        description=request.description,
     )
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=201)
@@ -255,9 +261,9 @@ def evaluate_model(request: EvaluateModelRequest):
 def delete_model(model_id: str):
     repo = TrainedModelMySQL(db_handler)
     presenter = new_delete_model_presenter()
-    usecase = new_delete_model_interactor(repo, presenter, ctx_timeout)
+    usecase = new_delete_model_interactor(presenter, repo, ctx_timeout)
     controller = DeleteModelController(usecase)
-    input_data = DeleteModelInput(id=UUID(value=model_id))
+    input_data = DeleteModelInput(model_id=UUID(value=model_id))
     response_dict = controller.execute(input_data)
     return handle_response(response_dict, success_code=204)
 

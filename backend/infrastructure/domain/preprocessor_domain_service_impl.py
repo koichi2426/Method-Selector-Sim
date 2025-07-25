@@ -2,6 +2,7 @@ from domain.preprocessor_domain_service import PreprocessorDomainService
 from domain.scenario import Scenario
 from domain.training_ready_scenario import TrainingReadyScenario, NewTrainingReadyScenario
 from domain.custom_uuid import NewUUID
+from datetime import datetime # datetimeをインポート
 
 class PreprocessorDomainServiceImpl(PreprocessorDomainService):
     """
@@ -25,7 +26,8 @@ class PreprocessorDomainServiceImpl(PreprocessorDomainService):
             Scenario_ID=scenario.ID,
             state=scenario.state,
             method_group=scenario.method_group,
-            negative_method_group=scenario.negative_method_group
+            negative_method_group=scenario.negative_method_group,
+            created_at=datetime.now() # 現在時刻をcreated_atとして追加
         )
         
         return processed_scenario

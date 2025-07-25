@@ -1,5 +1,6 @@
 import random
 from typing import List
+from datetime import datetime  # datetimeをインポート
 
 from domain.log_generation_config import LogGenerationConfig
 from domain.scenario import Scenario, NewScenario
@@ -23,28 +24,32 @@ class ScenarioGeneratorDomainServiceImpl(ScenarioGeneratorDomainService):
                 state="User is on the login page",
                 method_group="emailLogin, googleLogin, appleLogin",
                 target_method="emailLogin - Login with email and password",
-                negative_method_group="googleLogin, appleLogin"
+                negative_method_group="googleLogin, appleLogin",
+                created_at=datetime.now() # created_atを追加
             ),
             NewScenario(
                 ID=NewUUID(),
                 state="User pressed 'Add to Cart' on the product detail page",
                 method_group="addToCart, viewCart, checkout",
                 target_method="addToCart - Add product to the shopping cart",
-                negative_method_group="viewCart, checkout"
+                negative_method_group="viewCart, checkout",
+                created_at=datetime.now() # created_atを追加
             ),
             NewScenario(
                 ID=NewUUID(),
                 state="User entered credit card information on the payment screen",
                 method_group="validateCard, processPayment, showReceipt",
                 target_method="processPayment - Execute the payment process",
-                negative_method_group="validateCard, showReceipt"
+                negative_method_group="validateCard, showReceipt",
+                created_at=datetime.now() # created_atを追加
             ),
             NewScenario(
                 ID=NewUUID(),
                 state="User opened the profile edit page",
                 method_group="updateProfile, changePassword, uploadAvatar",
                 target_method="updateProfile - Update user information",
-                negative_method_group="changePassword, uploadAvatar"
+                negative_method_group="changePassword, uploadAvatar",
+                created_at=datetime.now() # created_atを追加
             )
         ]
 

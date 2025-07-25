@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import List, Optional
 from .custom_uuid import UUID
+from datetime import datetime  # datetimeをインポート
 
 @dataclass
 class Triplet:
@@ -10,6 +11,7 @@ class Triplet:
     anchor: str
     positive: str
     negative: str
+    created_at: datetime  # created_atフィールドを追加
 
 class TripletRepository(abc.ABC):
     @abc.abstractmethod
@@ -38,6 +40,7 @@ def NewTriplet(
     anchor: str,
     positive: str,
     negative: str,
+    created_at: datetime,  # created_atを引数として受け取る
 ) -> Triplet:
     return Triplet(
         ID=ID,
@@ -45,4 +48,5 @@ def NewTriplet(
         anchor=anchor,
         positive=positive,
         negative=negative,
+        created_at=created_at,  # created_atを渡す
     )
