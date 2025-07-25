@@ -18,7 +18,8 @@ class FindAllScenarioPresenterImpl(FindAllScenarioPresenter):
                 "method_group": [method.strip() for method in s.method_group.split(',')],
                 "target_method": s.target_method,
                 # 文字列をカンマで分割して配列に変換
-                "negative_method_group": [method.strip() for method in s.negative_method_group.split(',')]
+                "negative_method_group": [method.strip() for method in s.negative_method_group.split(',')],
+                "created_at": s.created_at.isoformat(), # created_atを追加し、ISO形式の文字列に変換
             }
             for s in scenarios
         ]

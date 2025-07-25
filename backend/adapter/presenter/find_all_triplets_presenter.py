@@ -16,7 +16,8 @@ class FindAllTripletsPresenterImpl(FindAllTripletsPresenter):
                 "TrainingReadyScenario_ID": t.TrainingReadyScenario_ID.value, # UUIDを文字列に変換
                 "anchor": t.anchor,
                 "positive": t.positive,
-                "negative": t.negative
+                "negative": t.negative,
+                "created_at": t.created_at.isoformat(), # created_atを追加し、ISO形式の文字列に変換
             }
             for t in triplets
         ]

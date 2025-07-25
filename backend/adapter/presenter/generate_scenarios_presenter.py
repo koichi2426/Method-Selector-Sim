@@ -15,7 +15,8 @@ class GenerateScenariosPresenterImpl(GenerateScenariosPresenter):
             "method_group": [method.strip() for method in scenario.method_group.split(',')],
             "target_method": scenario.target_method,
             # 文字列をカンマで分割して配列に変換
-            "negative_method_group": [method.strip() for method in scenario.negative_method_group.split(',')]
+            "negative_method_group": [method.strip() for method in scenario.negative_method_group.split(',')],
+            "created_at": scenario.created_at.isoformat(), # created_atを追加
         }
 
 def new_generate_scenarios_presenter() -> GenerateScenariosPresenter:

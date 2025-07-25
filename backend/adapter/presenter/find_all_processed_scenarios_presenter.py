@@ -14,7 +14,8 @@ class FindAllProcessedScenariosPresenterImpl(FindAllProcessedScenariosPresenter)
                 "Scenario_ID": s.Scenario_ID.value,
                 "state": s.state,
                 "method_group": [method.strip() for method in s.method_group.split(',')],
-                "negative_method_group": [method.strip() for method in s.negative_method_group.split(',')]
+                "negative_method_group": [method.strip() for method in s.negative_method_group.split(',')],
+                "created_at": s.created_at.isoformat(), # created_atを追加し、ISO形式の文字列に変換
             }
             for s in scenarios
         ]

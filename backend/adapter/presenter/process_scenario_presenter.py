@@ -13,7 +13,8 @@ class ProcessScenarioPresenterImpl(ProcessScenarioPresenter):
             "Scenario_ID": training_ready_scenario.Scenario_ID.value,
             "state": training_ready_scenario.state,
             "method_group": [method.strip() for method in training_ready_scenario.method_group.split(',')],
-            "negative_method_group": [method.strip() for method in training_ready_scenario.negative_method_group.split(',')]
+            "negative_method_group": [method.strip() for method in training_ready_scenario.negative_method_group.split(',')],
+            "created_at": training_ready_scenario.created_at.isoformat(), # created_atを追加
         }
 
 def new_process_scenario_presenter() -> ProcessScenarioPresenter:

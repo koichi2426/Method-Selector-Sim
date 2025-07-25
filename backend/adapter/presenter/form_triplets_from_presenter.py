@@ -15,7 +15,8 @@ class FormTripletsFromPresenterImpl(FormTripletsFromPresenter):
             "TrainingReadyScenario_ID": triplet.TrainingReadyScenario_ID.value, # UUIDを文字列に変換
             "anchor": triplet.anchor,
             "positive": triplet.positive,
-            "negative": triplet.negative
+            "negative": triplet.negative,
+            "created_at": triplet.created_at.isoformat(), # created_atを追加し、ISO形式の文字列に変換
         }
 
 def new_form_triplets_from_presenter() -> FormTripletsFromPresenter:
