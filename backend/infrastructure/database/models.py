@@ -1,5 +1,5 @@
 # backend/infrastructure/database/models.py
-from sqlalchemy import Column, String, Text, DateTime, JSON, Float, ForeignKey
+from sqlalchemy import Column, String, Text, DateTime, JSON, Float, ForeignKey, func
 from sqlalchemy.orm import declarative_base
 import datetime
 
@@ -14,7 +14,7 @@ class Dataset(Base):
     description = Column(Text)
     type = Column(String(50))
     triplet_ids = Column(JSON)
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `scenarios`テーブルの定義
 class Scenario(Base):
@@ -24,6 +24,7 @@ class Scenario(Base):
     method_group = Column(Text, nullable=False)
     target_method = Column(Text, nullable=False)
     negative_method_group = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `training_ready_scenarios`テーブルの定義
 class TrainingReadyScenario(Base):
@@ -33,6 +34,7 @@ class TrainingReadyScenario(Base):
     state = Column(Text, nullable=False)
     method_group = Column(Text, nullable=False)
     negative_method_group = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `triplets`テーブルの定義
 class Triplet(Base):
@@ -42,6 +44,7 @@ class Triplet(Base):
     anchor = Column(Text, nullable=False)
     positive = Column(Text, nullable=False)
     negative = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `trained_models`テーブルの定義
 class TrainedModel(Base):
@@ -51,7 +54,7 @@ class TrainedModel(Base):
     dataset_id = Column(String(36), ForeignKey('datasets.id'), nullable=False)
     description = Column(Text)
     file_path = Column(String(255))
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `model_evaluation_sessions`テーブルの定義
 class ModelEvaluationSession(Base):
@@ -60,7 +63,7 @@ class ModelEvaluationSession(Base):
     trained_model_id = Column(String(36), ForeignKey('trained_models.id'), nullable=False)
     dataset_id = Column(String(36), ForeignKey('datasets.id'), nullable=False)
     summary_metrics = Column(JSON)
-    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now, server_default=func.now())
 
 # `individual_evaluation_results`テーブルの定義
 class IndividualEvaluationResult(Base):
