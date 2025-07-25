@@ -1,6 +1,7 @@
 from typing import List, Optional
 from domain import TrainingReadyScenario, TrainingReadyScenarioRepository, UUID
 from adapter.repository.sql import SQL, Row, Rows, RowData
+from datetime import datetime # datetimeをインポート
 
 
 class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
@@ -15,8 +16,8 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
     def create(self, scenario: TrainingReadyScenario) -> TrainingReadyScenario:
         query = """
             INSERT INTO training_ready_scenarios (
-                id, scenario_id, state, method_group, negative_method_group
-            ) VALUES (%s, %s, %s, %s, %s)
+                id, scenario_id, state, method_group, negative_method_group, created_at
+            ) VALUES (%s, %s, %s, %s, %s, %s)
         """
         try:
             self.db.execute(
@@ -26,6 +27,7 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
                 scenario.state,
                 scenario.method_group,
                 scenario.negative_method_group,
+                scenario.created_at, # created_atを追加
             )
             return scenario
         except Exception as e:
@@ -98,6 +100,7 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
                 state,
                 method_group,
                 negative_method_group,
+                created_at, # created_atを追加
             ) = row_data
             return TrainingReadyScenario(
                 ID=UUID(value=id_str),
@@ -105,6 +108,7 @@ class TrainingReadyScenarioMySQL(TrainingReadyScenarioRepository):
                 state=state,
                 method_group=method_group,
                 negative_method_group=negative_method_group,
+                created_at=created_at, # created_atを追加
             )
         except Exception as e:
             # エラーが発生した場合はログに出力するとデバッグしやすい
