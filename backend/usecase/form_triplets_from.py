@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol
 from domain import TrainingReadyScenario, TrainingReadyScenarioRepository, Triplet, TripletRepository, TripletFormerDomainService, UUID
+from datetime import datetime # datetimeをインポート
 
 
 class FormTripletsFromUseCase(Protocol):
@@ -23,6 +24,7 @@ class FormTripletsFromOutput:
     anchor: str
     positive: str
     negative: str
+    created_at: datetime # created_atフィールドを追加
 
 
 class FormTripletsFromPresenter(abc.ABC):
@@ -74,6 +76,7 @@ class FormTripletsFromInteractor:
                 anchor="",
                 positive="",
                 negative="",
+                created_at=datetime.now(), # created_atを追加
             )
             return empty_output, e
 

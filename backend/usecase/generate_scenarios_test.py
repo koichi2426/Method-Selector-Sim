@@ -2,6 +2,7 @@ import unittest
 import uuid as std_uuid
 from unittest.mock import Mock, MagicMock
 from typing import List
+from datetime import datetime
 
 from domain import (
     Scenario,
@@ -40,6 +41,7 @@ class MockGenerateScenariosPresenter(GenerateScenariosPresenter):
             method_group=scenario.method_group,
             target_method=scenario.target_method,
             negative_method_group=scenario.negative_method_group,
+            created_at=scenario.created_at,
         )
 
 
@@ -80,12 +82,14 @@ class TestGenerateScenariosInput(unittest.TestCase):
 class TestGenerateScenariosOutput(unittest.TestCase):
     def test_create_output_with_valid_data(self):
         test_id = UUID(value=str(std_uuid.uuid4()))
+        now = datetime.now()
         output = GenerateScenariosOutput(
             ID=test_id,
             state="active",
             method_group="test_group",
             target_method="test_method",
-            negative_method_group="negative_group"
+            negative_method_group="negative_group",
+            created_at=now
         )
         
         self.assertEqual(output.ID, test_id)
@@ -93,6 +97,7 @@ class TestGenerateScenariosOutput(unittest.TestCase):
         self.assertEqual(output.method_group, "test_group")
         self.assertEqual(output.target_method, "test_method")
         self.assertEqual(output.negative_method_group, "negative_group")
+        self.assertEqual(output.created_at, now)
 
 
 class TestGenerateScenariosPresenter(unittest.TestCase):
@@ -100,12 +105,14 @@ class TestGenerateScenariosPresenter(unittest.TestCase):
         presenter = MockGenerateScenariosPresenter()
         
         test_id = UUID(value=str(std_uuid.uuid4()))
+        now = datetime.now()
         scenario = Scenario(
             ID=test_id,
             state="active",
             method_group="test_group",
             target_method="test_method",
-            negative_method_group="negative_group"
+            negative_method_group="negative_group",
+            created_at=now
         )
         
         output = presenter.output(scenario)
@@ -115,6 +122,7 @@ class TestGenerateScenariosPresenter(unittest.TestCase):
         self.assertEqual(output.method_group, "test_group")
         self.assertEqual(output.target_method, "test_method")
         self.assertEqual(output.negative_method_group, "negative_group")
+        self.assertEqual(output.created_at, now)
         self.assertEqual(len(presenter.output_calls), 1)
         self.assertEqual(presenter.output_calls[0], scenario)
 
@@ -127,7 +135,8 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
             state="active",
             method_group="test_group",
             target_method="test_method",
-            negative_method_group="negative_group"
+            negative_method_group="negative_group",
+            created_at=datetime.now()
         )
         
         self.method_profile = MethodProfile(
@@ -179,14 +188,16 @@ class TestGenerateScenariosInteractor(unittest.TestCase):
             state="active",
             method_group="group1",
             target_method="method1",
-            negative_method_group="negative1"
+            negative_method_group="negative1",
+            created_at=datetime.now()
         )
         scenario2 = Scenario(
             ID=UUID(value=str(std_uuid.uuid4())),
             state="inactive",
             method_group="group2",
             target_method="method2",
-            negative_method_group="negative2"
+            negative_method_group="negative2",
+            created_at=datetime.now()
         )
         
         repo = MockScenarioRepository()
@@ -264,4 +275,4 @@ class TestNewGenerateScenariosInteractor(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()

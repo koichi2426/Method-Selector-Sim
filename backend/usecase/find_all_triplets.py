@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import Protocol, List
 from domain import Triplet, TripletRepository, UUID
+from datetime import datetime  # datetimeをインポート
 
 
 class FindAllTripletsUseCase(Protocol):
@@ -16,6 +17,7 @@ class FindAllTripletsOutput:
     anchor: str
     positive: str
     negative: str
+    created_at: datetime  # created_atフィールドを追加
 
 
 class FindAllTripletsPresenter(abc.ABC):
