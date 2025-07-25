@@ -12,7 +12,8 @@ import {
     SettingsIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
-    ClipboardDocumentIcon
+    ClipboardDocumentIcon,
+    PlayIcon
 } from '@/app/components/Icons';
 
 // Tripletデータの型定義を更新
@@ -64,6 +65,12 @@ export default function DatabaseTripletsPage() {
   // Selection & Deletion States
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+
+  // New Dataset Creation States
+  const [newDatasetName, setNewDatasetName] = useState('');
+  const [newDatasetDesc, setNewDatasetDesc] = useState('');
+  const [isCreatingDataset, setIsCreatingDataset] = useState(false);
+  const [showDatasetModal, setShowDatasetModal] = useState(false);
 
   // Toast Notification State
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -124,6 +131,45 @@ export default function DatabaseTripletsPage() {
     } finally {
         setSelectedIds([]);
         setShowBulkConfirmModal(false);
+    }
+  };
+
+  const handleCreateDataset = async () => {
+    if (!newDatasetName.trim()) {
+        setToast({ message: 'データセット名を入力してください。', type: 'error' });
+        return;
+    }
+    if (selectedIds.length === 0) {
+        setToast({ message: '少なくとも1つのTripletを選択してください。', type: 'error' });
+        return;
+    }
+    setIsCreatingDataset(true);
+    setError(null);
+    try {
+        const response = await fetch('http://localhost:8000/v1/datasets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: newDatasetName,
+                description: newDatasetDesc,
+                triplet_ids: selectedIds
+            })
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `HTTPエラー: ${response.status}`);
+        }
+        setToast({ message: 'データセットが正常に作成されました。', type: 'success' });
+        setNewDatasetName('');
+        setNewDatasetDesc('');
+        setSelectedIds([]);
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'データセットの作成に失敗しました。';
+        setError(errorMessage);
+        setToast({ message: errorMessage, type: 'error' });
+    } finally {
+        setIsCreatingDataset(false);
+        setShowDatasetModal(false);
     }
   };
   
@@ -193,7 +239,7 @@ export default function DatabaseTripletsPage() {
           <SettingsIcon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">操作パネル</h2>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Tripletデータの閲覧と管理</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Tripletデータの閲覧とデータセット作成</p>
       </div>
       <div className="p-6 space-y-6 flex-1 overflow-y-auto">
         <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 space-y-2">
@@ -217,7 +263,10 @@ export default function DatabaseTripletsPage() {
         </div>
 
         <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-600">
-          <button onClick={fetchTriplets} disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 transition-colors"><RotateCcwIcon className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />{loading ? '更新中...' : 'データを再取得'}</button>
+          <button onClick={() => setShowDatasetModal(true)} disabled={selectedIds.length === 0} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors">
+            <PlayIcon className="h-4 w-4" />
+            選択したTripletでデータセット作成 ({selectedIds.length})
+          </button>
           <button onClick={() => setShowBulkConfirmModal(true)} disabled={selectedIds.length === 0} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"><TrashIcon className="h-4 w-4" />選択したデータを削除 ({selectedIds.length})</button>
         </div>
         {error && (<div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"><p className="text-xs text-red-700 dark:text-red-300">{error}</p></div>)}
@@ -292,6 +341,33 @@ export default function DatabaseTripletsPage() {
       {toast && (<div className="fixed bottom-5 right-5 z-50"><div className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${toast.type === 'success' ? 'bg-green-100 dark:bg-green-800/90 text-green-800 dark:text-green-100' : 'bg-red-100 dark:bg-red-800/90 text-red-800 dark:text-red-100'}`}>{toast.message}</div></div>)}
       
       {showBulkConfirmModal && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"><div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md"><h3 className="text-lg font-medium text-gray-900 dark:text-white">一括削除の確認</h3><div className="mt-4"><p className="text-sm text-gray-600 dark:text-gray-300">{selectedIds.length}件のデータを本当に削除しますか？この操作は元に戻せません。</p></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setShowBulkConfirmModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600">キャンセル</button><button type="button" onClick={confirmBulkDelete} className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700">削除する</button></div></div></div>)}
+    
+      {showDatasetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">データセット作成</h3>
+                <div className="mt-4 space-y-4">
+                    <div>
+                        <label htmlFor="newDatasetName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">データセット名</label>
+                        <input type="text" id="newDatasetName" value={newDatasetName} onChange={(e) => setNewDatasetName(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800"/>
+                    </div>
+                    <div>
+                        <label htmlFor="newDatasetDesc" className="block text-sm font-medium text-gray-700 dark:text-gray-300">説明</label>
+                        <input type="text" id="newDatasetDesc" value={newDatasetDesc} onChange={(e) => setNewDatasetDesc(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-800"/>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        選択中の {selectedIds.length} 件のTripletで新しいデータセットを作成します。
+                    </p>
+                </div>
+                <div className="mt-6 flex justify-end gap-3">
+                    <button type="button" onClick={() => setShowDatasetModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600">キャンセル</button>
+                    <button type="button" onClick={handleCreateDataset} disabled={isCreatingDataset} className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 disabled:opacity-50">
+                        {isCreatingDataset ? <Spinner className="h-4 w-4 animate-spin"/> : '作成'}
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
     </>
   );
 }
