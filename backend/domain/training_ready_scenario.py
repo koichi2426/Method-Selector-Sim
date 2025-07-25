@@ -2,6 +2,7 @@ import abc
 from dataclasses import dataclass
 from typing import List, Optional
 from .custom_uuid import UUID
+from datetime import datetime # datetimeをインポート
 
 @dataclass
 class TrainingReadyScenario:
@@ -10,6 +11,7 @@ class TrainingReadyScenario:
     state: str
     method_group: str
     negative_method_group: str
+    created_at: datetime # created_atフィールドを追加
 
 class TrainingReadyScenarioRepository(abc.ABC):
     @abc.abstractmethod
@@ -38,6 +40,7 @@ def NewTrainingReadyScenario(
     state: str,
     method_group: str,
     negative_method_group: str,
+    created_at: datetime, # created_atを引数として受け取る
 ) -> TrainingReadyScenario:
     return TrainingReadyScenario(
         ID=ID,
@@ -45,4 +48,5 @@ def NewTrainingReadyScenario(
         state=state,
         method_group=method_group,
         negative_method_group=negative_method_group,
+        created_at=created_at, # created_atを渡す
     )
