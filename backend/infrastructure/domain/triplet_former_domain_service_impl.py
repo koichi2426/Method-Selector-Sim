@@ -1,5 +1,6 @@
 import random
 from typing import List
+from datetime import datetime  # datetimeをインポート
 
 from domain.training_ready_scenario import TrainingReadyScenario
 from domain.triplet import Triplet, NewTriplet
@@ -44,7 +45,8 @@ class TripletFormerDomainServiceImpl(TripletFormerDomainService):
             TrainingReadyScenario_ID=scenario.ID,
             anchor=anchor,
             positive=positive,
-            negative=negative
+            negative=negative,
+            created_at=datetime.now() # created_atを追加
         )
 
         return new_triplet
