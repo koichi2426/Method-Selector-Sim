@@ -221,8 +221,8 @@ export default function DatabaseModelsPage() {
           <div className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {currentModels.map((model) => (
               <div key={model.ID} className={`transition-colors duration-150 ${selectedIds.includes(model.ID) ? 'bg-blue-100 dark:bg-blue-900/30' : 'even:bg-gray-50 dark:even:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`} onClick={() => toggleSelection(model.ID)}>
-                <div className="px-6 py-4 flex items-center justify-between gap-4 cursor-pointer">
-                  <div className="flex-shrink-0"><input type="checkbox" checked={selectedIds.includes(model.ID)} onChange={(e) => { e.stopPropagation(); toggleSelection(model.ID); }} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/></div>
+                <div className="px-6 py-4 flex items-start justify-between gap-4 cursor-pointer">
+                  <div className="flex-shrink-0 pt-1"><input type="checkbox" checked={selectedIds.includes(model.ID)} onChange={(e) => { e.stopPropagation(); toggleSelection(model.ID); }} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/></div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{model.name}</h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{model.description}</p>
