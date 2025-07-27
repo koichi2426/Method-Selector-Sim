@@ -30,7 +30,9 @@ DockerとDocker Composeがインストールされていれば、以下の簡単
     ```bash
     cd Method-Selector-Sim/frontend
     ```
-3.  **データベースにマイグレーションファイルの内容を適用**
+
+3.  **envファイルをルートディレクトリに配置**
+4.  **データベースにマイグレーションファイルの内容を適用**
     ```bash
     docker-compose -f docker-compose.dev.yml run --rm backend python -m alembic upgrade head
     ```
